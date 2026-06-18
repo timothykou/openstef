@@ -996,7 +996,7 @@ window.runMermaid = runMermaid;</script>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">feature_importances</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-            <span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
+            <span class="n">data</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
             <span class="n">index</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;load&quot;</span><span class="p">],</span>
             <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="n">quantile</span><span class="o">.</span><span class="n">format</span><span class="p">()</span> <span class="k">for</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">],</span>
         <span class="p">)</span>
