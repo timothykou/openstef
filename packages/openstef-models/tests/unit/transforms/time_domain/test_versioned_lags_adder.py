@@ -131,21 +131,21 @@ def test_lag_transform_with_horizon_filtering():
         data=pd.concat([
             pd.DataFrame(
                 {
-                    "available_at": timestamps + timedelta(days=3),
+                    "available_at": timestamps + pd.Timedelta(days=3),
                     "signal": ["bad"] * len(timestamps),
                 },
                 index=timestamps,
             ),
             pd.DataFrame(
                 {
-                    "available_at": timestamps + timedelta(days=5),
+                    "available_at": timestamps + pd.Timedelta(days=5),
                     "signal": ["okay"] * len(timestamps),
                 },
                 index=timestamps,
             ),
             pd.DataFrame(
                 {
-                    "available_at": timestamps + timedelta(days=10),
+                    "available_at": timestamps + pd.Timedelta(days=10),
                     "signal": ["best"] * len(timestamps),
                 },
                 index=timestamps,

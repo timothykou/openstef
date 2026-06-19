@@ -24,7 +24,7 @@ def predictions_dataset() -> TimeSeriesDataset:
             {
                 "quantile_P50": [1, 2, 3, 4],
                 "quantile_P90": [1, 2, 3, 4],
-                "available_at": pd.date_range("2020-01-01T00:00", periods=4, freq="h") - timedelta(hours=48),
+                "available_at": pd.date_range("2020-01-01T00:00", periods=4, freq="h") - pd.Timedelta(hours=48),
             },
             index=pd.date_range("2020-01-01T00:00", periods=4, freq="h"),
         ),
@@ -132,7 +132,7 @@ def test_ground_truth_with_nans_are_dropped(minimal_config: EvaluationConfig):
         index=index,
         quantile_P50=[1.0, 2.0, 3.0, 4.0],
         quantile_P90=[1.5, 2.5, 3.5, 4.5],
-        available_at=index - timedelta(hours=48),
+        available_at=index - pd.Timedelta(hours=48),
     )
 
     pipeline = EvaluationPipeline(

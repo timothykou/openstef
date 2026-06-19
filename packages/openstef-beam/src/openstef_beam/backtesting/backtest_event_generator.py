@@ -190,18 +190,25 @@ class BacktestEventGenerator(BaseModel):
                 # Training events are always processed individually
                 yield BacktestEventBatch(events=[event])
                 i += 1
+                continue
+
+            # Collect consecutive prediction events up to batch_size
+            batch_events = BacktestEventGenerator._collect_prediction_batch(events, i, batch_size)
+            if batch_events:
+                yield BacktestEventBatch(events=batch_events)
+                i += len(batch_events)
             else:
-                # Collect consecutive prediction events up to batch_size
-                batch_events: list[BacktestEvent] = []
-                batch_end = min(i + batch_size, len(events))
+                i += 1
 
-                for j in range(i, batch_end):
-                    if events[j].type != "predict":
-                        break
-                    batch_events.append(events[j])
-
-                if batch_events:
-                    yield BacktestEventBatch(events=batch_events)
-                    i += len(batch_events)
-                else:
-                    i += 1
+    @staticmethod
+    def _collect_prediction_batch(
+        events: list[BacktestEvent], start: int, batch_size: int
+    ) -> list[BacktestEvent]:
+        """Collect consecutive prediction events starting at ``start`` up to ``batch_size``."""
+        batch_events: list[BacktestEvent] = []
+        batch_end = min(start + batch_size, len(events))
+        for j in range(start, batch_end):
+            if events[j].type != "predict":
+                break
+            batch_events.append(events[j])
+        return batch_events

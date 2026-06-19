@@ -7,6 +7,7 @@ Designed to work with scikit-learn compatible regressors that support quantile r
 """
 
 import logging
+from typing import Any
 
 import numpy as np
 import numpy.typing as npt
@@ -81,27 +82,8 @@ class MultiQuantileRegressor(BaseEstimator, RegressorMixin):
             eval_sample_weight: Sample weights for evaluation data.
         """
         # Pass model-specific eval arguments
-        kwargs = {}
         for model in self._models:
-            # Check if early stopping is supported
-            # Check that eval_set is supported
-            if eval_set is None and "early_stopping_rounds" in self.hyperparams:
-                model.set_params(early_stopping_rounds=None)
-
-            if eval_set is not None and self.learner_eval_sample_weight_param is not None:
-                kwargs[self.learner_eval_sample_weight_param] = eval_sample_weight
-
-            if "early_stopping_rounds" in self.hyperparams and self.learner_eval_sample_weight_param is not None:
-                model.set_params(early_stopping_rounds=self.hyperparams["early_stopping_rounds"])
-
-            if feature_name:
-                self.model_feature_names = feature_name
-            else:
-                self.model_feature_names = []
-
-            if eval_sample_weight is not None and self.learner_eval_sample_weight_param:
-                kwargs[self.learner_eval_sample_weight_param] = eval_sample_weight
-
+            kwargs = self._prepare_fit_kwargs(model, eval_set, eval_sample_weight, feature_name)
             model.fit(  # type: ignore
                 X=np.asarray(X),
                 y=y,
@@ -110,6 +92,33 @@ class MultiQuantileRegressor(BaseEstimator, RegressorMixin):
             )
 
         self.is_fitted = True
+
+    def _prepare_fit_kwargs(
+        self,
+        model: Any,
+        eval_set: list[tuple[pd.DataFrame, npt.NDArray[np.floating]]] | None,
+        eval_sample_weight: list[npt.NDArray[np.floating]] | list[pd.Series] | None,
+        feature_name: list[str] | None,
+    ) -> dict[str, Any]:
+        """Configure a single base learner and build its model-specific fit kwargs."""
+        kwargs: dict[str, Any] = {}
+
+        # Check if early stopping is supported and that eval_set is supported
+        if eval_set is None and "early_stopping_rounds" in self.hyperparams:
+            model.set_params(early_stopping_rounds=None)
+
+        if eval_set is not None and self.learner_eval_sample_weight_param is not None:
+            kwargs[self.learner_eval_sample_weight_param] = eval_sample_weight
+
+        if "early_stopping_rounds" in self.hyperparams and self.learner_eval_sample_weight_param is not None:
+            model.set_params(early_stopping_rounds=self.hyperparams["early_stopping_rounds"])
+
+        self.model_feature_names = feature_name if feature_name else []
+
+        if eval_sample_weight is not None and self.learner_eval_sample_weight_param:
+            kwargs[self.learner_eval_sample_weight_param] = eval_sample_weight
+
+        return kwargs
 
     @property
     def learner_eval_sample_weight_param(self) -> str | None:

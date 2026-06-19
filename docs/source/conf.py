@@ -214,6 +214,27 @@ else:
 # Citations
 
 
+def _format_cff_author(author: dict[str, Any]) -> str | None:
+    """Format a single CFF author entry as ``Family, Given``, or None to skip it."""
+    if "name" in author and "Contributors" in author["name"]:
+        return None
+
+    parts: list[str] = []
+    if "family-names" in author:
+        family = author["family-names"]
+        if "name-particle" in author:
+            family = f"{author['name-particle']} {family}"
+        parts.append(family)
+
+    if "given-names" in author:
+        parts.append(author["given-names"])
+
+    if not parts:
+        return None
+
+    return f"{parts[0]}, {parts[1]}" if len(parts) == 2 else " ".join(parts)
+
+
 def cff_to_bibtex(cff_data: dict[str, Any]) -> str:
     """Convert CFF data to BibTeX format"""
     title: str = cff_data.get("title", "No Title")
@@ -225,25 +246,10 @@ def cff_to_bibtex(cff_data: dict[str, Any]) -> str:
     if "date-released" in cff_data:
         year = str(cff_data["date-released"])[:4]
 
-    authors = cff_data.get("authors", [])
     bib_authors: list[str] = []
-
-    for author in authors:
-        if "name" in author and "Contributors" in author["name"]:
-            continue
-
-        parts: list[str] = []
-        if "family-names" in author:
-            family = author["family-names"]
-            if "name-particle" in author:
-                family = f"{author['name-particle']} {family}"
-            parts.append(family)
-
-        if "given-names" in author:
-            parts.append(author["given-names"])
-
-        if parts:
-            full_name = f"{parts[0]}, {parts[1]}" if len(parts) == 2 else " ".join(parts)
+    for author in cff_data.get("authors", []):
+        full_name = _format_cff_author(author)
+        if full_name:
             bib_authors.append(full_name)
 
     authors_str = " and ".join(bib_authors) if bib_authors else "Unknown"
