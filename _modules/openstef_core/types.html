@@ -889,9 +889,9 @@ window.runMermaid = runMermaid;</script>
 <span class="kn">from</span><span class="w"> </span><span class="nn">enum</span><span class="w"> </span><span class="kn">import</span> <span class="n">StrEnum</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">total_ordering</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Any</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">Self</span><span class="p">,</span> <span class="n">override</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">zoneinfo</span><span class="w"> </span><span class="kn">import</span> <span class="n">ZoneInfo</span>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pytz</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic</span><span class="w"> </span><span class="kn">import</span> <span class="n">GetCoreSchemaHandler</span><span class="p">,</span> <span class="n">TypeAdapter</span><span class="p">,</span> <span class="n">ValidationInfo</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pydantic_core</span><span class="w"> </span><span class="kn">import</span> <span class="n">CoreSchema</span><span class="p">,</span> <span class="n">core_schema</span>
 
@@ -1031,10 +1031,10 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">    - *HHMM* is the time of day</span>
 
 <span class="sd">    An optional timezone suffix ``[Region/City]`` (RFC 9557 bracket</span>
-<span class="sd">    notation) makes the availability time timezone-aware.  Both pytz</span>
+<span class="sd">    notation) makes the availability time timezone-aware.  ``zoneinfo``</span>
 <span class="sd">    and stdlib ``datetime.timezone`` objects are accepted; they</span>
 <span class="sd">    round-trip through the IANA name via ``str(tz)`` /</span>
-<span class="sd">    ``pytz.timezone(name)``.</span>
+<span class="sd">    ``zoneinfo.ZoneInfo(name)``.</span>
 
 <span class="sd">    For example, ``D-1T0600[Europe/Amsterdam]`` means &quot;6:00</span>
 <span class="sd">    Europe/Amsterdam on the previous day&quot;.</span>
@@ -1043,8 +1043,8 @@ window.runMermaid = runMermaid;</script>
 
 <span class="sd">    Example:</span>
 <span class="sd">        &gt;&gt;&gt; from datetime import time</span>
-<span class="sd">        &gt;&gt;&gt; import pytz</span>
-<span class="sd">        &gt;&gt;&gt; tz_at = AvailableAt(day_offset=-1, time_of_day=time(6, 0), tzinfo=pytz.timezone(&#39;Europe/Amsterdam&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; from zoneinfo import ZoneInfo</span>
+<span class="sd">        &gt;&gt;&gt; tz_at = AvailableAt(day_offset=-1, time_of_day=time(6, 0), tzinfo=ZoneInfo(&#39;Europe/Amsterdam&#39;))</span>
 <span class="sd">        &gt;&gt;&gt; str(tz_at)</span>
 <span class="sd">        &#39;D-1T0600[Europe/Amsterdam]&#39;</span>
 <span class="sd">        &gt;&gt;&gt; at = AvailableAt.from_string(&quot;D-1T0600&quot;)</span>
@@ -1054,7 +1054,7 @@ window.runMermaid = runMermaid;</script>
 
 <div class="viewcode-block" id="AvailableAt.__init__">
 <a class="viewcode-back" href="../../api/generated/openstef_core.types.AvailableAt.html#openstef_core.types.AvailableAt.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day_offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tzinfo</span><span class="p">:</span> <span class="n">pytz</span><span class="o">.</span><span class="n">BaseTzInfo</span> <span class="o">|</span> <span class="n">dt_timezone</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">day_offset</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">time_of_day</span><span class="p">:</span> <span class="n">time</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">tzinfo</span><span class="p">:</span> <span class="n">ZoneInfo</span> <span class="o">|</span> <span class="n">dt_timezone</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialise with a day offset, time of day, and optional timezone.</span>
 
 <span class="sd">        Args:</span>
@@ -1062,7 +1062,7 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">                ``-1`` means &quot;the previous day&quot;, ``0`` means &quot;the same day&quot;.</span>
 <span class="sd">            time_of_day: Clock time when data becomes available.</span>
 <span class="sd">            tzinfo: Optional timezone for the availability time</span>
-<span class="sd">                (e.g. ``pytz.timezone(&quot;Europe/Amsterdam&quot;)``, ``pytz.UTC``,</span>
+<span class="sd">                (e.g. ``zoneinfo.ZoneInfo(&quot;Europe/Amsterdam&quot;)``, ``zoneinfo.ZoneInfo(&quot;UTC&quot;)``,</span>
 <span class="sd">                or ``datetime.timezone.utc``).</span>
 
 <span class="sd">        Raises:</span>
@@ -1122,9 +1122,9 @@ window.runMermaid = runMermaid;</script>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">z_part</span><span class="p">:</span>
-            <span class="n">resolved_tz</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">UTC</span>
+            <span class="n">resolved_tz</span> <span class="o">=</span> <span class="n">ZoneInfo</span><span class="p">(</span><span class="s2">&quot;UTC&quot;</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">tz_part</span><span class="p">:</span>
-            <span class="n">resolved_tz</span> <span class="o">=</span> <span class="n">pytz</span><span class="o">.</span><span class="n">timezone</span><span class="p">(</span><span class="n">tz_part</span><span class="p">)</span>
+            <span class="n">resolved_tz</span> <span class="o">=</span> <span class="n">ZoneInfo</span><span class="p">(</span><span class="n">tz_part</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">resolved_tz</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -1169,10 +1169,7 @@ window.runMermaid = runMermaid;</script>
         <span class="k">if</span> <span class="n">source_tz</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">naive_result</span>
 
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">source_tz</span><span class="p">,</span> <span class="n">pytz</span><span class="o">.</span><span class="n">BaseTzInfo</span><span class="p">):</span>
-            <span class="n">aware</span> <span class="o">=</span> <span class="n">source_tz</span><span class="o">.</span><span class="n">localize</span><span class="p">(</span><span class="n">naive_result</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">aware</span> <span class="o">=</span> <span class="n">naive_result</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">source_tz</span><span class="p">)</span>
+        <span class="n">aware</span> <span class="o">=</span> <span class="n">naive_result</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">tzinfo</span><span class="o">=</span><span class="n">source_tz</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">date</span><span class="o">.</span><span class="n">tzinfo</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">aware</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">tzinfo</span><span class="p">)</span>
