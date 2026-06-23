@@ -486,11 +486,11 @@ across the codebase.</p>
 <section id="pep-8-with-ruff">
 <h3>PEP 8 with Ruff<a class="headerlink" href="#pep-8-with-ruff" title="Link to this heading">#</a></h3>
 <p>OpenSTEF follows <a class="reference external" href="https://peps.python.org/pep-0008/">PEP 8</a> as enforced by
-<a class="reference external" href="https://docs.astral.sh/ruff/">Ruff</a>. Our configuration extends the standard
-line length to <strong>88 characters</strong> (matching Black’s default).</p>
+<a class="reference external" href="https://docs.astral.sh/ruff/">Ruff</a>. Our configuration sets the line length to
+<strong>120 characters</strong>.</p>
 <p>Key formatting rules:</p>
 <ul class="simple">
-<li><p><strong>Line length</strong>: 88 characters maximum</p></li>
+<li><p><strong>Line length</strong>: 120 characters maximum</p></li>
 <li><p><strong>Indentation</strong>: 4 spaces (no tabs)</p></li>
 <li><p><strong>Quotes</strong>: Prefer double quotes for strings</p></li>
 <li><p><strong>Trailing commas</strong>: Required in multi-line constructs</p></li>
@@ -562,6 +562,36 @@ poe<span class="w"> </span>format
 </div>
 </section>
 </section>
+<section id="optional-dependencies">
+<span id="id3"></span><h2>Optional Dependencies<a class="headerlink" href="#optional-dependencies" title="Link to this heading">#</a></h2>
+<p>Heavy or platform-specific dependencies (<code class="docutils literal notranslate"><span class="pre">xgboost</span></code>, <code class="docutils literal notranslate"><span class="pre">onnxruntime</span></code>, <code class="docutils literal notranslate"><span class="pre">torch</span></code>,
+<code class="docutils literal notranslate"><span class="pre">huggingface-hub</span></code>, …) are optional extras in <code class="docutils literal notranslate"><span class="pre">pyproject.toml</span></code>. Two patterns
+decide where a missing extra fails, based on the module’s role.</p>
+<p><strong>Implementation modules</strong> (a forecaster, backend, or integration) own the
+dependency: import it at top level and fail immediately with
+<a class="reference internal" href="../api/generated/openstef_core.exceptions.MissingExtraError.html#openstef_core.exceptions.MissingExtraError" title="openstef_core.exceptions.MissingExtraError"><code class="xref py py-class docutils literal notranslate"><span class="pre">MissingExtraError</span></code></a>. Importing the module is the
+opt-in, so the failure is honest and the rest of the module can use real types.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span><span class="w"> </span><span class="nn">xgboost</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">xgb</span>
+<span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="n">MissingExtraError</span><span class="p">(</span><span class="s2">&quot;xgboost&quot;</span><span class="p">,</span> <span class="s2">&quot;openstef-models&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+</pre></div>
+</div>
+<p><strong>Aggregator modules</strong> (a package <code class="docutils literal notranslate"><span class="pre">__init__</span></code>, preset, or factory) must import
+without any extra installed: re-export only the dependency-free surface
+(protocols, configs, enums) and lazy-import the chosen implementation inside the
+branch that needs it.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">build_backend</span><span class="p">(</span><span class="n">config</span><span class="p">:</span> <span class="n">BackendConfig</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">InferenceBackend</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">kind</span> <span class="o">==</span> <span class="s2">&quot;onnx&quot;</span><span class="p">:</span>
+        <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_foundation_models.inference.onnx_backend</span><span class="w"> </span><span class="kn">import</span> <span class="n">OnnxBackend</span>
+
+        <span class="k">return</span> <span class="n">OnnxBackend</span><span class="o">.</span><span class="n">from_checkpoint</span><span class="p">(</span><span class="n">config</span><span class="o">.</span><span class="n">checkpoint</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Don’t <code class="docutils literal notranslate"><span class="pre">try/except</span> <span class="pre">ImportError</span></code> just to defer the failure to call time, and
+don’t blanket re-export implementation modules from an <code class="docutils literal notranslate"><span class="pre">__init__</span></code> — that forces
+every consumer to install every extra.</p>
+</section>
 <section id="variable-naming-conventions">
 <span id="variable-naming"></span><h2>Variable Naming Conventions<a class="headerlink" href="#variable-naming-conventions" title="Link to this heading">#</a></h2>
 <section id="general-naming-rules">
@@ -619,7 +649,7 @@ poe<span class="w"> </span>format
 </section>
 </section>
 <section id="type-hints">
-<span id="id3"></span><h2>Type Hints<a class="headerlink" href="#type-hints" title="Link to this heading">#</a></h2>
+<span id="id4"></span><h2>Type Hints<a class="headerlink" href="#type-hints" title="Link to this heading">#</a></h2>
 <p>OpenSTEF 4.0 uses type hints for better code clarity and IDE support.</p>
 <section id="required-type-hints">
 <h3>Required type hints<a class="headerlink" href="#required-type-hints" title="Link to this heading">#</a></h3>
@@ -864,7 +894,7 @@ poe<span class="w"> </span>all<span class="w"> </span>--check
 </section>
 </section>
 <section id="logging-for-contributors">
-<span id="id4"></span><h2>Logging for Contributors<a class="headerlink" href="#logging-for-contributors" title="Link to this heading">#</a></h2>
+<span id="id5"></span><h2>Logging for Contributors<a class="headerlink" href="#logging-for-contributors" title="Link to this heading">#</a></h2>
 <p>OpenSTEF uses Python’s standard logging library with a <code class="docutils literal notranslate"><span class="pre">NullHandler</span></code> by default,
 allowing users to configure logging as needed. Contributors should follow these
 practices for consistent and useful logging throughout the codebase.</p>
@@ -1433,7 +1463,7 @@ poe<span class="w"> </span>doctests<span class="w">           </span><span class
 </section>
 </section>
 <section id="performance-guidelines">
-<span id="id5"></span><h2>Performance Guidelines<a class="headerlink" href="#performance-guidelines" title="Link to this heading">#</a></h2>
+<span id="id6"></span><h2>Performance Guidelines<a class="headerlink" href="#performance-guidelines" title="Link to this heading">#</a></h2>
 <section id="pandas-and-numpy-optimization">
 <h3>Pandas and NumPy optimization<a class="headerlink" href="#pandas-and-numpy-optimization" title="Link to this heading">#</a></h3>
 <p>Follow efficient pandas patterns:</p>
@@ -1482,7 +1512,7 @@ poe<span class="w"> </span>doctests<span class="w">           </span><span class
 </section>
 </section>
 <section id="backwards-compatibility">
-<span id="id6"></span><h2>Backwards Compatibility<a class="headerlink" href="#backwards-compatibility" title="Link to this heading">#</a></h2>
+<span id="id7"></span><h2>Backwards Compatibility<a class="headerlink" href="#backwards-compatibility" title="Link to this heading">#</a></h2>
 <section id="api-design">
 <h3>API design<a class="headerlink" href="#api-design" title="Link to this heading">#</a></h3>
 <p>Design stable public APIs:</p>
@@ -1608,6 +1638,7 @@ poe<span class="w"> </span>doctests<span class="w">           </span><span class
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#import-organization">Import organization</a></li>
 </ul>
 </li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#optional-dependencies">Optional Dependencies</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#variable-naming-conventions">Variable Naming Conventions</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#general-naming-rules">General naming rules</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#domain-specific-naming">Domain-specific naming</a></li>

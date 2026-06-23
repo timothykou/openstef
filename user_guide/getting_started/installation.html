@@ -530,6 +530,9 @@ If you need Python 3.10/3.11 support, consider using OpenSTEF 3.x.</p>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">openstef-meta</span></code></p></td>
 <td><p>Meta-models for combining and stacking forecasts (ensembles, weighted blends)</p></td>
 </tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">openstef-foundation-models</span></code></p></td>
+<td><p>Foundation-model forecasters (e.g. Chronos-2) run on an ONNX runtime</p></td>
+</tr>
 </tbody>
 </table>
 </div>
@@ -567,8 +570,10 @@ pixi</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<p>This installs <code class="docutils literal notranslate"><span class="pre">openstef</span></code> meta-package by default, which provides the core functionality
-including <cite>openstef-core</cite> and <cite>openstef-models</cite>.</p>
+<p>This installs the <code class="docutils literal notranslate"><span class="pre">openstef</span></code> meta-package, a minimal-but-runnable convenience layer:
+<code class="docutils literal notranslate"><span class="pre">openstef-core</span></code> plus <code class="docutils literal notranslate"><span class="pre">openstef-models</span></code> with its CPU XGBoost runtime. To pick GPU
+runtimes, foundation models, or a leaner footprint, install the individual component
+packages with the extras you need (see below).</p>
 </section>
 <section id="installation-options">
 <h2>Installation Options<a class="headerlink" href="#installation-options" title="Link to this heading">#</a></h2>
@@ -592,7 +597,8 @@ uv</label><div class="sd-tab-content docutils">
 </div>
 </div>
 </div>
-<p>This installs all available packages: <code class="docutils literal notranslate"><span class="pre">openstef-models</span></code> and <code class="docutils literal notranslate"><span class="pre">openstef-beam</span></code>.</p>
+<p>This installs every component (<code class="docutils literal notranslate"><span class="pre">openstef-beam</span></code>, <code class="docutils literal notranslate"><span class="pre">openstef-foundation-models</span></code>,
+<code class="docutils literal notranslate"><span class="pre">openstef-meta</span></code>, <code class="docutils literal notranslate"><span class="pre">openstef-models</span></code>) in its CPU flavour.</p>
 <p><strong>Individual Package Installation:</strong></p>
 <p>Install only the packages you need:</p>
 <div class="sd-tab-set docutils">
@@ -640,11 +646,11 @@ pip</label><div class="sd-tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Models + BEAM</span>
 pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;openstef[beam]&quot;</span>
 
-<span class="c1"># Models + Foundational models (when available)</span>
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;openstef[foundational-models]&quot;</span>
+<span class="c1"># Models + foundation models (CPU runtime)</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;openstef[foundation-models]&quot;</span>
 
 <span class="c1"># Multiple extras</span>
-pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;openstef[beam,foundational-models]&quot;</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;openstef[beam,foundation-models]&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -654,11 +660,11 @@ uv</label><div class="sd-tab-content docutils">
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Models + BEAM</span>
 uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;openstef[beam]&quot;</span>
 
-<span class="c1"># Models + Foundational models (when available)</span>
-uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;openstef[foundational-models]&quot;</span>
+<span class="c1"># Models + foundation models (CPU runtime)</span>
+uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;openstef[foundation-models]&quot;</span>
 
 <span class="c1"># Multiple extras</span>
-uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;openstef[beam,foundational-models]&quot;</span>
+uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;openstef[beam,foundation-models]&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -698,6 +704,75 @@ uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;open
 </table>
 </div>
 </section>
+<section id="compute-runtimes-cpu-vs-gpu">
+<h3>Compute Runtimes: CPU vs GPU<a class="headerlink" href="#compute-runtimes-cpu-vs-gpu" title="Link to this heading">#</a></h3>
+<p>Some packages ship a heavy compute runtime that comes in mutually exclusive CPU and
+GPU builds. Pick exactly one per package: they are declared as conflicting extras, so
+a resolver refuses to install both at once.</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id4">
+<caption><span class="caption-text">Choose one runtime per package</span><a class="headerlink" href="#id4" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 34.0%" />
+<col style="width: 33.0%" />
+<col style="width: 33.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Package</p></th>
+<th class="head"><p>CPU (default)</p></th>
+<th class="head"><p>GPU (CUDA; Linux/Windows)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">openstef-foundation-models</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[cpu]</span></code> (onnxruntime)</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[gpu]</span></code> (onnxruntime-gpu)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">openstef-models</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[xgb-cpu]</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">[xgb-gpu]</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># CPU build (works on every platform; the flavour the meta-package ships)</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;openstef-foundation-models[cpu]&quot;</span>
+
+<span class="c1"># GPU build (CUDA-enabled Linux or Windows only)</span>
+pip<span class="w"> </span>install<span class="w"> </span><span class="s2">&quot;openstef-foundation-models[gpu]&quot;</span>
+</pre></div>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">openstef</span></code> meta-package (and its <code class="docutils literal notranslate"><span class="pre">[all]</span></code> extra) always selects the CPU builds.
+For GPU, install the component package directly with its <code class="docutils literal notranslate"><span class="pre">[gpu]</span></code> extra. GPU wheels are
+published for Linux and Windows with CUDA; there is no GPU build for macOS.</p>
+<p>Feature extras are additive — combine as many as you need:</p>
+<div class="pst-scrollable-table-container"><table class="table" id="id5">
+<caption><span class="caption-text">Optional feature extras</span><a class="headerlink" href="#id5" title="Link to this table">#</a></caption>
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 60.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Extra</p></th>
+<th class="head"><p>Adds</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">openstef-models[lgbm]</span></code></p></td>
+<td><p>LightGBM forecasters</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">openstef-models[tuning]</span></code></p></td>
+<td><p>Optuna hyperparameter tuning</p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">openstef-core[benchmark]</span></code></p></td>
+<td><p>Benchmark dataset loaders (HuggingFace Hub)</p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">openstef-beam[all]</span></code></p></td>
+<td><p>All BEAM baselines plus S3 storage</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
 </section>
 <section id="development-installation">
 <h2>Development Installation<a class="headerlink" href="#development-installation" title="Link to this heading">#</a></h2>
@@ -715,30 +790,33 @@ uv<span class="w"> </span>add<span class="w"> </span><span class="s2">&quot;open
 git<span class="w"> </span>clone<span class="w"> </span>https://github.com/OpenSTEF/openstef.git
 <span class="nb">cd</span><span class="w"> </span>openstef
 
-<span class="c1"># Install in development mode with all dependencies</span>
-uv<span class="w"> </span>sync<span class="w"> </span>--all-extras<span class="w"> </span>--dev
+<span class="c1"># Install the full development environment (CPU flavour)</span>
+uv<span class="w"> </span>sync
 
 <span class="c1"># Verify installation</span>
-uv<span class="w"> </span>run<span class="w"> </span>pytest
+uv<span class="w"> </span>run<span class="w"> </span>poe<span class="w"> </span>all
 </pre></div>
 </div>
-<p>This installs:</p>
-<ul class="simple">
-<li><p>All OpenSTEF packages in editable mode</p></li>
-<li><p>Development tools (linting, testing, documentation)</p></li>
-<li><p>Pre-commit hooks for code quality</p></li>
-</ul>
-</section>
-<section id="package-specific-development">
-<h3>Package-Specific Development<a class="headerlink" href="#package-specific-development" title="Link to this heading">#</a></h3>
-<p>To work on individual packages:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install specific package in development mode</span>
-<span class="nb">cd</span><span class="w"> </span>packages/openstef-models
-uv<span class="w"> </span>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
-
-<span class="c1"># Or install with development dependencies</span>
-uv<span class="w"> </span>sync<span class="w"> </span>--dev
+<p>A plain <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code> installs the default <code class="docutils literal notranslate"><span class="pre">dev</span></code> group: every workspace package in
+editable mode plus the full toolbelt (test, lint, type-check, notebooks, docs). One
+command, no <code class="docutils literal notranslate"><span class="pre">--all-groups</span></code> or <code class="docutils literal notranslate"><span class="pre">--all-packages</span></code> needed.</p>
+<p>For a GPU development environment (CUDA; Linux/Windows), swap the runtime flavour:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>sync<span class="w"> </span>--no-default-groups<span class="w"> </span>--group<span class="w"> </span>dev-gpu
 </pre></div>
+</div>
+</section>
+<section id="partial-toolbelts">
+<h3>Partial Toolbelts<a class="headerlink" href="#partial-toolbelts" title="Link to this heading">#</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">dev</span></code> group aggregates focused groups you can sync on their own, e.g. to run
+just the tests or just the linters:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>sync<span class="w"> </span>--no-default-groups<span class="w"> </span>--group<span class="w"> </span><span class="nb">test</span><span class="w">    </span><span class="c1"># pytest stack only</span>
+uv<span class="w"> </span>sync<span class="w"> </span>--no-default-groups<span class="w"> </span>--group<span class="w"> </span>lint<span class="w">     </span><span class="c1"># ruff / reuse / pyproject-fmt</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Do not pass <code class="docutils literal notranslate"><span class="pre">--all-groups</span></code> or <code class="docutils literal notranslate"><span class="pre">--all-extras</span></code>: the CPU and GPU runtimes are
+declared as conflicting extras, so activating both flavours at once fails.</p>
 </div>
 </section>
 </section>
@@ -945,12 +1023,13 @@ pixi<span class="w"> </span>upgrade<span class="w"> </span>openstef
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#quick-installation">Quick Installation</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#installation-options">Installation Options</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#choose-your-installation">Choose Your Installation</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#compute-runtimes-cpu-vs-gpu">Compute Runtimes: CPU vs GPU</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#development-installation">Development Installation</a><ul class="pst-show_toc_level nav section-nav flex-column">
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#prerequisites">Prerequisites</a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#clone-and-install">Clone and Install</a></li>
-<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#package-specific-development">Package-Specific Development</a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#partial-toolbelts">Partial Toolbelts</a></li>
 </ul>
 </li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#verification">Verification</a></li>

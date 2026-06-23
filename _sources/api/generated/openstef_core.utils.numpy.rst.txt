@@ -1,0 +1,37 @@
+.. SPDX-FileCopyrightText: 2025 Contributors to the OpenSTEF project <openstef@lfenergy.org>
+..
+.. SPDX-License-Identifier: MPL-2.0
+
+
+
+numpy
+=====
+
+.. currentmodule:: openstef_core.utils.numpy
+
+.. automodule:: openstef_core.utils.numpy
+   :no-members:
+   :no-inherited-members:
+
+
+
+
+
+
+
+
+
+
+Functions
+---------
+
+.. autosummary::
+   :toctree: .
+   :template: custom_function.rst
+
+   interpolate_quantiles
+   zero_fill_with_mask
+
+
+
+

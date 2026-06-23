@@ -1,0 +1,10 @@
+.. SPDX-FileCopyrightText: 2025 Contributors to the OpenSTEF project <openstef@lfenergy.org>
+..
+.. SPDX-License-Identifier: MPL-2.0
+
+zero_fill_with_mask
+===================
+
+.. currentmodule:: openstef_core.utils
+
+.. autofunction:: zero_fill_with_mask

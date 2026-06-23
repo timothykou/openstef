@@ -509,16 +509,25 @@ You can reproduce these exact numbers by running the benchmark notebooks under
 <img alt="Box plot of rCRPS per model and target group on the Liander 2024 benchmark. The ensemble has the lowest median rCRPS in every group, gblinear is close behind, and xgboost trails." class="align-center" src="../../_images/liander2024_rcrps_by_group.png" />
 <p>Each box shows the distribution of per-target <code class="docutils literal notranslate"><span class="pre">rCRPS</span></code> within a target group (one
 point per target). Lower is better.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This figure covers the <strong>trained classical models</strong> only and predates the
+foundation-model results. For the zero-shot <strong>Chronos-2</strong> numbers, see the
+<a class="reference internal" href="#benchmark-tables"><span class="std std-ref">tables below</span></a>.</p>
+</div>
 <p><strong>Takeaways</strong></p>
 <ul class="simple">
-<li><p>The <strong>ensemble</strong> is the most accurate model across every target group, on both the
-unweighted and the peak-weighted metric.</p></li>
-<li><p><strong>GBLinear</strong> is a strong, consistent second and a good single-model default —
-especially where extrapolation beyond the training range matters (congestion).</p></li>
-<li><p><strong>XGBoost</strong> alone trails the other two on this benchmark. The ensemble does not
-use it: it blends GBLinear with a LightGBM learner, pairing GBLinear’s linear
-extrapolation with complementary non-linear structure.</p></li>
-<li><p>The gap between models <em>widens</em> under the peak-weighted metric (see
+<li><p><strong>Chronos-2</strong>, a zero-shot foundation model that is not trained on this data, posts
+the lowest aggregate <code class="docutils literal notranslate"><span class="pre">rCRPS</span></code> and <code class="docutils literal notranslate"><span class="pre">rMAE</span></code> on this benchmark; its compact <code class="docutils literal notranslate"><span class="pre">small</span></code>
+variant is close behind. It is heavier at inference than the classical models — see
+the <a class="reference internal" href="../concepts/models.html#concept-models"><span class="std std-ref">Model Selection Guide</span></a> for the trade-offs.</p></li>
+<li><p>Among the <strong>trained</strong> models, the <strong>ensemble</strong> is the strongest and most consistent
+across groups, with <strong>GBLinear</strong> a close, dependable second — especially where
+extrapolation beyond the training range matters (congestion).</p></li>
+<li><p><strong>XGBoost</strong> alone trails the other trained models here. The ensemble does not use it:
+it blends GBLinear with a LightGBM learner, pairing GBLinear’s linear extrapolation
+with complementary non-linear structure.</p></li>
+<li><p>Differences between models <em>widen</em> under the peak-weighted metric (see
 <a class="reference internal" href="#metric-rcrps-weighted"><span class="std std-ref">rCRPS sample-weighted</span></a>), most visibly for the highly
 intermittent solar and wind targets.</p></li>
 </ul>
@@ -617,12 +626,28 @@ column is in bold.</p>
 <td><p>0.070</p></td>
 </tr>
 <tr class="row-even"><th class="stub"><p>Ensemble</p></th>
-<td><p><strong>0.049</strong></p></td>
-<td><p><strong>0.039</strong></p></td>
-<td><p><strong>0.047</strong></p></td>
-<td><p><strong>0.058</strong></p></td>
-<td><p><strong>0.037</strong></p></td>
-<td><p><strong>0.066</strong></p></td>
+<td><p>0.049</p></td>
+<td><p>0.039</p></td>
+<td><p>0.047</p></td>
+<td><p>0.058</p></td>
+<td><p>0.037</p></td>
+<td><p>0.066</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Chronos-2</p></th>
+<td><p><strong>0.044</strong></p></td>
+<td><p><strong>0.035</strong></p></td>
+<td><p><strong>0.042</strong></p></td>
+<td><p><strong>0.050</strong></p></td>
+<td><p><strong>0.036</strong></p></td>
+<td><p><strong>0.063</strong></p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Chronos-2 (small)</p></th>
+<td><p>0.046</p></td>
+<td><p>0.038</p></td>
+<td><p>0.044</p></td>
+<td><p>0.052</p></td>
+<td><p>0.039</p></td>
+<td><p>0.064</p></td>
 </tr>
 </tbody>
 </table>
@@ -666,12 +691,28 @@ column is in bold.</p>
 <td><p>0.107</p></td>
 </tr>
 <tr class="row-even"><th class="stub"><p>Ensemble</p></th>
-<td><p><strong>0.059</strong></p></td>
-<td><p><strong>0.042</strong></p></td>
-<td><p><strong>0.053</strong></p></td>
-<td><p><strong>0.067</strong></p></td>
+<td><p>0.059</p></td>
+<td><p>0.042</p></td>
+<td><p>0.053</p></td>
+<td><p>0.067</p></td>
 <td><p><strong>0.069</strong></p></td>
-<td><p><strong>0.096</strong></p></td>
+<td><p>0.096</p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Chronos-2</p></th>
+<td><p><strong>0.051</strong></p></td>
+<td><p><strong>0.036</strong></p></td>
+<td><p><strong>0.043</strong></p></td>
+<td><p><strong>0.053</strong></p></td>
+<td><p><strong>0.069</strong></p></td>
+<td><p><strong>0.093</strong></p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Chronos-2 (small)</p></th>
+<td><p>0.053</p></td>
+<td><p>0.038</p></td>
+<td><p>0.046</p></td>
+<td><p>0.055</p></td>
+<td><p>0.074</p></td>
+<td><p>0.094</p></td>
 </tr>
 </tbody>
 </table>
@@ -715,12 +756,28 @@ column is in bold.</p>
 <td><p>0.110</p></td>
 </tr>
 <tr class="row-even"><th class="stub"><p>Ensemble</p></th>
-<td><p><strong>0.078</strong></p></td>
-<td><p><strong>0.063</strong></p></td>
-<td><p><strong>0.074</strong></p></td>
-<td><p><strong>0.089</strong></p></td>
+<td><p>0.078</p></td>
+<td><p>0.063</p></td>
+<td><p>0.074</p></td>
+<td><p>0.089</p></td>
 <td><p><strong>0.062</strong></p></td>
 <td><p><strong>0.103</strong></p></td>
+</tr>
+<tr class="row-odd"><th class="stub"><p>Chronos-2</p></th>
+<td><p><strong>0.072</strong></p></td>
+<td><p><strong>0.058</strong></p></td>
+<td><p><strong>0.069</strong></p></td>
+<td><p><strong>0.082</strong></p></td>
+<td><p><strong>0.062</strong></p></td>
+<td><p><strong>0.103</strong></p></td>
+</tr>
+<tr class="row-even"><th class="stub"><p>Chronos-2 (small)</p></th>
+<td><p>0.076</p></td>
+<td><p>0.062</p></td>
+<td><p>0.073</p></td>
+<td><p>0.086</p></td>
+<td><p>0.066</p></td>
+<td><p>0.105</p></td>
 </tr>
 </tbody>
 </table>
@@ -742,8 +799,10 @@ transformers, solar parks, wind parks).</p></td>
 <tr class="row-even"><th class="stub"><p>Models</p></th>
 <td><p><code class="docutils literal notranslate"><span class="pre">xgboost</span></code> (<code class="xref py py-class docutils literal notranslate"><span class="pre">XGBoostForecaster</span></code>),
 <code class="docutils literal notranslate"><span class="pre">gblinear</span></code> (<code class="xref py py-class docutils literal notranslate"><span class="pre">GBLinearForecaster</span></code>),
-and <code class="docutils literal notranslate"><span class="pre">ensemble</span></code> (an openstef-meta learned-weight combination of
-LightGBM and GBLinear base models).</p></td>
+<code class="docutils literal notranslate"><span class="pre">ensemble</span></code> (an openstef-meta learned-weight combination of LightGBM and
+GBLinear base models), and the <strong>zero-shot Chronos-2</strong> foundation model
+(<code class="docutils literal notranslate"><span class="pre">base</span></code> and <code class="docutils literal notranslate"><span class="pre">small</span></code>) run via ONNX with no training — see
+<a class="reference internal" href="../../tutorials/foundation_model_forecasting.html"><span class="doc">Foundation-Model Forecasting</span></a>.</p></td>
 </tr>
 <tr class="row-odd"><th class="stub"><p>Forecast moment</p></th>
 <td><p>Day-ahead, with all inputs restricted to what was available at <strong>D-1 06:00</strong>

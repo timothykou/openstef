@@ -400,12 +400,13 @@
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/backtesting_quickstart.html">Backtesting Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/datasets.html">Understanding Datasets</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Model Training</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training &amp; Forecasting</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/custom_pipeline.html">Custom Pipeline</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/feature_engineering.html">Feature Engineering</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/ensemble_forecasting.html">Ensemble Forecasting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../tutorials/hyperparameter_tuning_with_optuna.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/foundation_model_forecasting.html">Foundation-Model Forecasting</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluation &amp; Analysis</span></p>
 <ul class="nav bd-sidenav">
@@ -554,7 +555,7 @@ SPDX-License-Identifier: MPL-2.0
 <section id="quick-start">
 <h2>Quick start<a class="headerlink" href="#quick-start" title="Link to this heading">#</a></h2>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install (requires uv: https://docs.astral.sh/uv/)</span>
-uv<span class="w"> </span>sync<span class="w"> </span>--all-extras<span class="w"> </span>--all-groups<span class="w"> </span>--all-packages
+uv<span class="w"> </span>sync
 
 <span class="c1"># Test the example forecaster on Liander 2024</span>
 uv<span class="w"> </span>run<span class="w"> </span>python<span class="w"> </span>-m<span class="w"> </span>examples.benchmarks.custom.run_liander2024_benchmark

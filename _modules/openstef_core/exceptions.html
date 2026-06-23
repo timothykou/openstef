@@ -885,21 +885,26 @@ window.runMermaid = runMermaid;</script>
 <div class="viewcode-block" id="MissingExtraError">
 <a class="viewcode-back" href="../../api/generated/openstef_core.exceptions.MissingExtraError.html#openstef_core.exceptions.MissingExtraError">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">MissingExtraError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised when an extra is missing in the extras list.&quot;&quot;&quot;</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Exception raised when an optional dependency for a feature is not installed.&quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="MissingExtraError.__init__">
 <a class="viewcode-back" href="../../api/generated/openstef_core.exceptions.MissingExtraError.html#openstef_core.exceptions.MissingExtraError.__init__">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;openstef-beam&quot;</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the exception with the name of the missing extra.</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extra</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">package</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;openstef-beam&quot;</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">install_extra</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the exception with the missing dependency and how to install it.</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            extra: Name of the missing extra package.</span>
-<span class="sd">            package: Name of the package requiring the extra.</span>
+<span class="sd">            extra: Import/distribution name that failed to import (e.g. ``&quot;onnxruntime&quot;``).</span>
+<span class="sd">            package: OpenSTEF package that owns the optional feature.</span>
+<span class="sd">            install_extra: The extra group to install for this feature (e.g. ``&quot;cpu&quot;``),</span>
+<span class="sd">                yielding ``pip install {package}[{install_extra}]``. When ``None`` the hint</span>
+<span class="sd">                installs ``extra`` directly. Prefer naming the extra group: not every package</span>
+<span class="sd">                defines an ``[all]`` extra, and some groups are mutually exclusive.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">extra</span> <span class="o">=</span> <span class="n">extra</span>
+        <span class="n">target</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s2">[</span><span class="si">{</span><span class="n">install_extra</span><span class="si">}</span><span class="s2">]&quot;</span> <span class="k">if</span> <span class="n">install_extra</span> <span class="k">else</span> <span class="n">extra</span>
         <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="sa">f</span><span class="s2">&quot;Optional package </span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2"> is missing. Please install it to use this module using `pip install </span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2">` &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;or install all optional features using `pip install </span><span class="si">{</span><span class="n">package</span><span class="si">}</span><span class="s2">[all]`.&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Optional dependency &#39;</span><span class="si">{</span><span class="n">extra</span><span class="si">}</span><span class="s2">&#39; is required for this feature but is not installed. &quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;Install it with `pip install </span><span class="si">{</span><span class="n">target</span><span class="si">}</span><span class="s2">`.&quot;</span>
         <span class="p">)</span></div>
 </div>
 

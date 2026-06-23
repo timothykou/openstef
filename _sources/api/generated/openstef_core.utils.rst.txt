@@ -34,6 +34,7 @@ Submodules
    openstef_core.utils.invariants
    openstef_core.utils.itertools
    openstef_core.utils.multiprocessing
+   openstef_core.utils.numpy
    openstef_core.utils.pandas
    openstef_core.utils.pydantic
 
@@ -50,10 +51,12 @@ Functions
 
    align_datetime
    align_datetime_to_time
+   interpolate_quantiles
    not_none
    run_parallel
    timedelta_from_isoformat
    timedelta_to_isoformat
+   zero_fill_with_mask
 
 
 

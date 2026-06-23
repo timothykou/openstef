@@ -887,7 +887,7 @@ window.runMermaid = runMermaid;</script>
 <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">_err</span><span class="p">:</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingExtraError</span>
 
-    <span class="k">raise</span> <span class="n">MissingExtraError</span><span class="p">(</span><span class="s2">&quot;optuna&quot;</span><span class="p">,</span> <span class="s2">&quot;openstef-models[tuning]&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">_err</span>
+    <span class="k">raise</span> <span class="n">MissingExtraError</span><span class="p">(</span><span class="s2">&quot;optuna&quot;</span><span class="p">,</span> <span class="s2">&quot;openstef-models&quot;</span><span class="p">,</span> <span class="n">install_extra</span><span class="o">=</span><span class="s2">&quot;tuning&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">_err</span>
 
 <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.base_model</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseConfig</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.datasets</span><span class="w"> </span><span class="kn">import</span> <span class="n">TimeSeriesDataset</span>

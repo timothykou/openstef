@@ -539,20 +539,32 @@ pip</label><div class="sd-tab-content docutils">
 <li><p><code class="docutils literal notranslate"><span class="pre">openstef-beam</span></code>: Backtesting, evaluation, analysis and metrics</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">openstef-core</span></code>: Core utilities, dataset types, shared types and base models used by other packages</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">docs</span></code>: Documentation source</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">openstef-meta</span></code>: Meta-models for combining and stacking forecasts (ensembles, weighted blends)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">openstef-foundation-models</span></code>: Foundation-model forecasters (e.g. Chronos-2) on an ONNX runtime</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">openstef-compatibility</span></code>: Compatibility layer for OpenSTEF 3.x (coming soon)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">openstef-foundational-models</span></code>: Deep learning and foundational models (coming soon)</p></li>
 </ul>
 <p>Install the development dependencies using uv:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>sync<span class="w"> </span>--all-groups<span class="w"> </span>--all-extras
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>uv<span class="w"> </span>sync
 </pre></div>
 </div>
-<p>This will:</p>
-<ol class="arabic simple">
-<li><p>Create a virtual environment (if one doesn’t exist)</p></li>
-<li><p>Install all workspace packages in development mode</p></li>
-<li><p>Install all development dependencies including testing, linting, and documentation tools</p></li>
-<li><p>Install all optional extras for development</p></li>
-</ol>
+<p>This installs the default <code class="docutils literal notranslate"><span class="pre">dev</span></code> dependency group: a curated aggregate of the focused
+groups (<code class="docutils literal notranslate"><span class="pre">test</span></code>, <code class="docutils literal notranslate"><span class="pre">lint</span></code>, <code class="docutils literal notranslate"><span class="pre">typecheck</span></code>, <code class="docutils literal notranslate"><span class="pre">notebooks</span></code>, <code class="docutils literal notranslate"><span class="pre">docs</span></code>, <code class="docutils literal notranslate"><span class="pre">deployment</span></code>) plus
+every workspace feature in its CPU flavour. One command gives you the full environment to
+run the tests, linters, type checker, and docs build — no <code class="docutils literal notranslate"><span class="pre">--all-groups</span></code> or
+<code class="docutils literal notranslate"><span class="pre">--all-packages</span></code> needed.</p>
+<p>To install only part of the toolbelt, sync the focused groups directly, e.g.
+<code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span> <span class="pre">--no-default-groups</span> <span class="pre">--group</span> <span class="pre">test</span></code> for just the test runner.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The default environment installs the <strong>CPU</strong> compute runtimes (<code class="docutils literal notranslate"><span class="pre">onnxruntime</span></code>,
+<code class="docutils literal notranslate"><span class="pre">xgboost-cpu</span></code>). For a GPU environment, run:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">uv</span> <span class="n">sync</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">default</span><span class="o">-</span><span class="n">groups</span> <span class="o">--</span><span class="n">group</span> <span class="n">dev</span><span class="o">-</span><span class="n">gpu</span>
+</pre></div>
+</div>
+<p>The CPU and GPU runtimes are declared as conflicting extras, so do <strong>not</strong> pass
+<code class="docutils literal notranslate"><span class="pre">--all-groups</span></code> or <code class="docutils literal notranslate"><span class="pre">--all-extras</span></code> — they would try to activate both flavours at once
+and fail. Install one or the other.</p>
+</div>
 </section>
 <section id="understanding-the-workspace-structure">
 <h2>Understanding the workspace structure<a class="headerlink" href="#understanding-the-workspace-structure" title="Link to this heading">#</a></h2>
@@ -632,7 +644,7 @@ poe<span class="w"> </span>docs-clean
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Building documentation requires additional dependencies that are included in the
-development environment. Make sure you’ve run <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span> <span class="pre">--all-groups</span> <span class="pre">--all-extras</span></code> first.</p>
+development environment. Make sure you’ve run <code class="docutils literal notranslate"><span class="pre">uv</span> <span class="pre">sync</span></code> first.</p>
 </div>
 </section>
 </section>

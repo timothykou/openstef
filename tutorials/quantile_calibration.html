@@ -402,12 +402,13 @@
 <li class="toctree-l1"><a class="reference internal" href="backtesting_quickstart.html">Backtesting Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Understanding Datasets</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Model Training</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training &amp; Forecasting</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="custom_pipeline.html">Custom Pipeline</a></li>
 <li class="toctree-l1"><a class="reference internal" href="feature_engineering.html">Feature Engineering</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ensemble_forecasting.html">Ensemble Forecasting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hyperparameter_tuning_with_optuna.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="foundation_model_forecasting.html">Foundation-Model Forecasting</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluation &amp; Analysis</span></p>
 <ul class="current nav bd-sidenav">
@@ -604,8 +605,8 @@ level.</p>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Calibration before isotonic correction:
 quantile  expected  observed     error
      P10       0.1  0.000000 -0.100000
-     P50       0.5  0.468966 -0.031034
-     P90       0.9  0.882759 -0.017241
+     P50       0.5  0.420690 -0.079310
+     P90       0.9  0.875862 -0.024138
 </pre></div>
 </div>
 </div>
@@ -663,9 +664,9 @@ appended to its postprocessing pipeline.</p>
 </div>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>quantile  expected  observed (before)  observed (after)  error (before)  error (after)
-     P10       0.1           0.000000          0.027586       -0.100000      -0.072414
-     P50       0.5           0.468966          0.641379       -0.031034       0.141379
-     P90       0.9           0.882759          0.944828       -0.017241       0.044828
+     P10       0.1           0.000000          0.034483       -0.100000      -0.065517
+     P50       0.5           0.420690          0.668966       -0.079310       0.168966
+     P90       0.9           0.875862          0.944828       -0.024138       0.044828
 </pre></div>
 </div>
 </div>
@@ -726,7 +727,7 @@ appended to its postprocessing pipeline.</p>
 </div>
 </details>
 <div class="cell_output docutils container">
-<img alt="../_images/e16fcd2f5d84d9c5853617724c7d95f01a044876f8ea0953f8f498167911d036.png" src="../_images/e16fcd2f5d84d9c5853617724c7d95f01a044876f8ea0953f8f498167911d036.png" />
+<img alt="../_images/04cc90fdb66807206c64a574f844da4799b284e9da9018e95f67a8e4e16d0b0c.png" src="../_images/04cc90fdb66807206c64a574f844da4799b284e9da9018e95f67a8e4e16d0b0c.png" />
 </div>
 </div>
 <p>Points closer to the diagonal indicate better calibration.  The isotonic

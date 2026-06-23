@@ -400,12 +400,13 @@
 <li class="toctree-l1"><a class="reference internal" href="backtesting_quickstart.html">Backtesting Quickstart</a></li>
 <li class="toctree-l1"><a class="reference internal" href="datasets.html">Understanding Datasets</a></li>
 </ul>
-<p aria-level="2" class="caption" role="heading"><span class="caption-text">Model Training</span></p>
+<p aria-level="2" class="caption" role="heading"><span class="caption-text">Training &amp; Forecasting</span></p>
 <ul class="nav bd-sidenav">
 <li class="toctree-l1"><a class="reference internal" href="custom_pipeline.html">Custom Pipeline</a></li>
 <li class="toctree-l1"><a class="reference internal" href="feature_engineering.html">Feature Engineering</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ensemble_forecasting.html">Ensemble Forecasting</a></li>
 <li class="toctree-l1"><a class="reference internal" href="hyperparameter_tuning_with_optuna.html">Hyperparameter Tuning</a></li>
+<li class="toctree-l1"><a class="reference internal" href="foundation_model_forecasting.html">Foundation-Model Forecasting</a></li>
 </ul>
 <p aria-level="2" class="caption" role="heading"><span class="caption-text">Evaluation &amp; Analysis</span></p>
 <ul class="nav bd-sidenav">
@@ -639,9 +640,9 @@ model training, and evaluation on a held-out test split.</p>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Training metrics:
    quantile        R2  observed_probability
-0       0.5  0.705951              0.434483
-1       0.1  0.652077              0.103448
-2       0.9  0.264186              0.924138
+0       0.5  0.714953              0.413793
+1       0.1  0.648269              0.117241
+2       0.9  0.263623              0.931034
 </pre></div>
 </div>
 </div>
@@ -706,43 +707,43 @@ Quantiles:     [0.5, 0.1, 0.9]
   <tbody>
     <tr>
       <th>2024-04-16 11:00:00+00:00</th>
-      <td>-546852.5000</td>
-      <td>-854115.1250</td>
-      <td>42404.828125</td>
+      <td>-578345.6875</td>
+      <td>-862651.000</td>
+      <td>35700.328125</td>
       <td>-390000.000000</td>
-      <td>335052.328015</td>
+      <td>331007.537348</td>
     </tr>
     <tr>
       <th>2024-04-16 11:15:00+00:00</th>
-      <td>-526324.4375</td>
-      <td>-850234.7500</td>
-      <td>48874.296875</td>
+      <td>-558917.2500</td>
+      <td>-859261.875</td>
+      <td>41983.015625</td>
       <td>-226666.666667</td>
-      <td>335052.328015</td>
+      <td>331007.537348</td>
     </tr>
     <tr>
       <th>2024-04-16 11:30:00+00:00</th>
-      <td>-480903.8750</td>
-      <td>-831437.6250</td>
-      <td>79170.015625</td>
+      <td>-514598.0625</td>
+      <td>-840918.500</td>
+      <td>73294.140625</td>
       <td>-553333.333333</td>
-      <td>335052.328015</td>
+      <td>331007.537348</td>
     </tr>
     <tr>
       <th>2024-04-16 11:45:00+00:00</th>
-      <td>-418569.1875</td>
-      <td>-800672.1250</td>
-      <td>121357.585938</td>
+      <td>-452816.6875</td>
+      <td>-810153.875</td>
+      <td>116811.625000</td>
       <td>-733333.333333</td>
-      <td>335052.328015</td>
+      <td>331007.537348</td>
     </tr>
     <tr>
       <th>2024-04-16 12:00:00+00:00</th>
-      <td>-360497.7500</td>
-      <td>-772933.8125</td>
-      <td>159801.781250</td>
+      <td>-395276.1250</td>
+      <td>-782568.500</td>
+      <td>156460.750000</td>
       <td>-320000.000000</td>
-      <td>223592.155729</td>
+      <td>219711.089636</td>
     </tr>
   </tbody>
 </table>
@@ -784,7 +785,7 @@ confidence bands in a single interactive chart.</p>
 </div>
 </details>
 <div class="cell_output docutils container">
-<img alt="../_images/a7771b62b6656d77dd7c780f838d4367f11def1395b0a3ec92f6ad9174ec2866.png" src="../_images/a7771b62b6656d77dd7c780f838d4367f11def1395b0a3ec92f6ad9174ec2866.png" />
+<img alt="../_images/24e8088b6ab2fc89a0dd6869b63125253f9fec11fb7da07a9718758bfdccad24.png" src="../_images/24e8088b6ab2fc89a0dd6869b63125253f9fec11fb7da07a9718758bfdccad24.png" />
 </div>
 </div>
 </section>
