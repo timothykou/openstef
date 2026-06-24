@@ -31,6 +31,7 @@ Submodules
    :template: module_overview.rst
 
    openstef_beam.metrics.metrics_deterministic
+   openstef_beam.metrics.metrics_helpers
    openstef_beam.metrics.metrics_probabilistic
 
 
@@ -52,6 +53,7 @@ Functions
    mape
    mean_absolute_calibration_error
    observed_probability
+   pinball_loss
    precision_recall
    r2
    rcrps

@@ -812,6 +812,7 @@
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.fbeta.html">fbeta</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.mae.html">mae</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.mape.html">mape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.pinball_loss.html">pinball_loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.precision_recall.html">precision_recall</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.r2.html">r2</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.relative_pinball_loss.html">relative_pinball_loss</a></li>
@@ -819,6 +820,10 @@
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.rmae.html">rmae</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.ConfusionMatrix.html">ConfusionMatrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.PrecisionRecall.html">PrecisionRecall</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="openstef_beam.metrics.metrics_helpers.html">metrics_helpers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_helpers.represented_interval_weights.html">represented_interval_weights</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="openstef_beam.metrics.metrics_probabilistic.html">metrics_probabilistic</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -837,6 +842,7 @@
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.mape.html">mape</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.mean_absolute_calibration_error.html">mean_absolute_calibration_error</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.observed_probability.html">observed_probability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.pinball_loss.html">pinball_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.precision_recall.html">precision_recall</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.r2.html">r2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.rcrps.html">rcrps</a></li>
@@ -1169,8 +1175,7 @@
 <dd><p>Calculate the relative Pinball Loss (also known as relative Quantile Loss).</p>
 <p>The relative pinball loss normalizes the pinball loss by the range of true values,
 making it scale-invariant and suitable for comparing quantile prediction errors
-across different datasets or time periods. The pinball loss can be used to quantify
-the accuracy of a single quantile.</p>
+across different datasets or time periods.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

@@ -812,6 +812,7 @@
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.fbeta.html">fbeta</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.mae.html">mae</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.mape.html">mape</a></li>
+<li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.pinball_loss.html">pinball_loss</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.precision_recall.html">precision_recall</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.r2.html">r2</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.relative_pinball_loss.html">relative_pinball_loss</a></li>
@@ -819,6 +820,10 @@
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.rmae.html">rmae</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.ConfusionMatrix.html">ConfusionMatrix</a></li>
 <li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.PrecisionRecall.html">PrecisionRecall</a></li>
+</ul>
+</details></li>
+<li class="toctree-l3 has-children"><a class="reference internal" href="openstef_beam.metrics.metrics_helpers.html">metrics_helpers</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
+<li class="toctree-l4"><a class="reference internal" href="openstef_beam.metrics.metrics_helpers.represented_interval_weights.html">represented_interval_weights</a></li>
 </ul>
 </details></li>
 <li class="toctree-l3 has-children"><a class="reference internal" href="openstef_beam.metrics.metrics_probabilistic.html">metrics_probabilistic</a><details><summary><span class="toctree-toggle" role="presentation"><i class="fa-solid fa-chevron-down"></i></span></summary><ul>
@@ -837,6 +842,7 @@
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.mape.html">mape</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.mean_absolute_calibration_error.html">mean_absolute_calibration_error</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.observed_probability.html">observed_probability</a></li>
+<li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.pinball_loss.html">pinball_loss</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.precision_recall.html">precision_recall</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.r2.html">r2</a></li>
 <li class="toctree-l3"><a class="reference internal" href="openstef_beam.metrics.rcrps.html">rcrps</a></li>
@@ -1194,19 +1200,22 @@ attention to peak load events that are critical for energy system operations.</p
 <tr class="row-odd"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.mape.html#openstef_beam.metrics.metrics_deterministic.mape" title="openstef_beam.metrics.metrics_deterministic.mape"><code class="xref py py-obj docutils literal notranslate"><span class="pre">mape</span></code></a>(y_true, y_pred)</p></td>
 <td><p>Calculate the Mean Absolute Percentage Error (MAPE).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.precision_recall.html#openstef_beam.metrics.metrics_deterministic.precision_recall" title="openstef_beam.metrics.metrics_deterministic.precision_recall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">precision_recall</span></code></a>(cm, *[, effective])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.pinball_loss.html#openstef_beam.metrics.metrics_deterministic.pinball_loss" title="openstef_beam.metrics.metrics_deterministic.pinball_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pinball_loss</span></code></a>(y_true, y_pred, *, quantile[, ...])</p></td>
+<td><p>Calculate the Pinball Loss (also known as Quantile Loss) for a single quantile.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.precision_recall.html#openstef_beam.metrics.metrics_deterministic.precision_recall" title="openstef_beam.metrics.metrics_deterministic.precision_recall"><code class="xref py py-obj docutils literal notranslate"><span class="pre">precision_recall</span></code></a>(cm, *[, effective])</p></td>
 <td><p>Calculate precision and recall metrics from a confusion matrix.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.r2.html#openstef_beam.metrics.metrics_deterministic.r2" title="openstef_beam.metrics.metrics_deterministic.r2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">r2</span></code></a>(y_true, y_pred, *[, sample_weights])</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.r2.html#openstef_beam.metrics.metrics_deterministic.r2" title="openstef_beam.metrics.metrics_deterministic.r2"><code class="xref py py-obj docutils literal notranslate"><span class="pre">r2</span></code></a>(y_true, y_pred, *[, sample_weights])</p></td>
 <td><p>Calculate the R² (coefficient of determination) score.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.relative_pinball_loss.html#openstef_beam.metrics.metrics_deterministic.relative_pinball_loss" title="openstef_beam.metrics.metrics_deterministic.relative_pinball_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relative_pinball_loss</span></code></a>(y_true, y_pred, *, ...)</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.relative_pinball_loss.html#openstef_beam.metrics.metrics_deterministic.relative_pinball_loss" title="openstef_beam.metrics.metrics_deterministic.relative_pinball_loss"><code class="xref py py-obj docutils literal notranslate"><span class="pre">relative_pinball_loss</span></code></a>(y_true, y_pred, *, ...)</p></td>
 <td><p>Calculate the relative Pinball Loss (also known as relative Quantile Loss).</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.riqd.html#openstef_beam.metrics.metrics_deterministic.riqd" title="openstef_beam.metrics.metrics_deterministic.riqd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">riqd</span></code></a>(y_true, y_pred_lower_q, y_pred_upper_q, *)</p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.riqd.html#openstef_beam.metrics.metrics_deterministic.riqd" title="openstef_beam.metrics.metrics_deterministic.riqd"><code class="xref py py-obj docutils literal notranslate"><span class="pre">riqd</span></code></a>(y_true, y_pred_lower_q, y_pred_upper_q, *)</p></td>
 <td><p>Calculate the relative Inter Quantile Distance (rIQD).</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.rmae.html#openstef_beam.metrics.metrics_deterministic.rmae" title="openstef_beam.metrics.metrics_deterministic.rmae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rmae</span></code></a>(y_true, y_pred, *[, lower_quantile, ...])</p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="openstef_beam.metrics.metrics_deterministic.rmae.html#openstef_beam.metrics.metrics_deterministic.rmae" title="openstef_beam.metrics.metrics_deterministic.rmae"><code class="xref py py-obj docutils literal notranslate"><span class="pre">rmae</span></code></a>(y_true, y_pred, *[, lower_quantile, ...])</p></td>
 <td><p>Calculate the relative Mean Absolute Error (rMAE) using percentiles for range calculation.</p></td>
 </tr>
 </tbody>

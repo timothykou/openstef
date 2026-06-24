@@ -887,11 +887,16 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">    - Proper scoring: Metrics that reward honest probability estimates over gaming the system.</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Literal</span>
+
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
 
-<span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">MissingExtraError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openstef_beam.metrics.metrics_deterministic</span><span class="w"> </span><span class="kn">import</span> <span class="n">pinball_loss</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openstef_beam.metrics.metrics_helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">represented_interval_weights</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantile</span>
+
+<span class="nb">type</span> <span class="n">QuantileWeightingMethod</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;interval&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">]</span>
 
 
 <div class="viewcode-block" id="crps">
@@ -901,6 +906,7 @@ window.runMermaid = runMermaid;</script>
     <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="n">quantiles</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="n">sample_weights</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="n">QuantileWeightingMethod</span> <span class="o">=</span> <span class="s2">&quot;interval&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the Continuous Ranked Probability Score (CRPS) for probabilistic forecasts.</span>
 
@@ -916,6 +922,10 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">            Must be sorted in ascending order and contain values in [0, 1].</span>
 <span class="sd">        sample_weights: Optional weights for each sample with shape (num_samples,).</span>
 <span class="sd">            If None, all samples are weighted equally.</span>
+<span class="sd">        method: Quantile weighting scheme to use. &quot;interval&quot; (default) weights each</span>
+<span class="sd">            quantile by the probability interval it represents on [0, 1], giving more</span>
+<span class="sd">            stability across quantile sets with different spacing. &quot;uniform&quot;</span>
+<span class="sd">            weights every quantile equally.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The weighted average CRPS across all samples. Lower values indicate</span>
@@ -939,15 +949,24 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        (single quantile). For well-calibrated forecasts, CRPS approximately</span>
 <span class="sd">        equals half the expected absolute error of random forecasts.</span>
 
-<span class="sd">    Raises:</span>
-<span class="sd">        MissingExtraError: If the `scoringrules` package is not installed.</span>
+<span class="sd">        The factor 2.0 converts the (weighted) average pinball loss into CRPS:</span>
+<span class="sd">        CRPS equals twice the integral of the pinball loss over all quantile</span>
+<span class="sd">        levels in [0, 1]. The (weighted) average of the per-quantile pinball losses</span>
+<span class="sd">        approximates that integral, and multiplying by 2 recovers the CRPS scale.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="kn">import</span><span class="w"> </span><span class="nn">scoringrules</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">sr</span>  <span class="c1"># noqa: PLC0415 - import is quite slow, so we delay it until this function is called</span>
-    <span class="k">except</span> <span class="ne">ImportError</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">MissingExtraError</span><span class="p">(</span><span class="s2">&quot;scoringrules&quot;</span><span class="p">,</span> <span class="n">package</span><span class="o">=</span><span class="s2">&quot;openstef-beam&quot;</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+    <span class="n">per_quantile_loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">pinball_loss</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">quantile</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">quantile</span><span class="p">),</span> <span class="n">sample_weights</span><span class="o">=</span><span class="n">sample_weights</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
 
-    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">average</span><span class="p">(</span><span class="n">sr</span><span class="o">.</span><span class="n">crps_quantile</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">),</span> <span class="n">weights</span><span class="o">=</span><span class="n">sample_weights</span><span class="p">))</span></div>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;interval&quot;</span><span class="p">:</span>
+        <span class="n">quantile_weights</span> <span class="o">=</span> <span class="n">represented_interval_weights</span><span class="p">([</span><span class="n">Quantile</span><span class="p">(</span><span class="n">quantile</span><span class="p">)</span> <span class="k">for</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">quantile_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">quantiles</span><span class="p">),</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantiles</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="p">(</span><span class="n">quantile_weights</span> <span class="o">@</span> <span class="n">per_quantile_loss</span><span class="p">))</span></div>
 
 
 
@@ -960,6 +979,7 @@ window.runMermaid = runMermaid;</script>
     <span class="n">lower_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
     <span class="n">upper_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span><span class="p">,</span>
     <span class="n">sample_weights</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="n">method</span><span class="p">:</span> <span class="n">QuantileWeightingMethod</span> <span class="o">=</span> <span class="s2">&quot;interval&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the relative Continuous Ranked Probability Score (rCRPS).</span>
 
@@ -976,6 +996,7 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        upper_quantile: Upper quantile for range calculation. Must be in [0, 1]</span>
 <span class="sd">            and greater than lower_quantile.</span>
 <span class="sd">        sample_weights: Optional weights for each sample with shape (num_samples,).</span>
+<span class="sd">        method: Quantile weighting scheme to use, either &quot;interval&quot; (default) or &quot;uniform&quot;.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        The relative CRPS as a float. Returns NaN if the range between</span>
@@ -1003,7 +1024,7 @@ window.runMermaid = runMermaid;</script>
     <span class="k">if</span> <span class="n">y_range</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="s2">&quot;NaN&quot;</span><span class="p">)</span>
 
-    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">crps</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">,</span> <span class="n">sample_weights</span><span class="p">)</span> <span class="o">/</span> <span class="n">y_range</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">crps</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">,</span> <span class="n">sample_weights</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="n">method</span><span class="p">)</span> <span class="o">/</span> <span class="n">y_range</span><span class="p">)</span></div>
 
 
 
@@ -1126,36 +1147,21 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        The weighted average Pinball Loss across all samples and quantiles. Lower values indicate better</span>
 <span class="sd">        forecast quality.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="c1"># Resize the predictions and targets.</span>
+    <span class="c1"># Reshape predictions and targets in case they arrive flattened (e.g. from an XGBoost eval callback,</span>
+    <span class="c1"># which repeats the observed value across quantile columns). Collapse the targets back to one value per sample.</span>
     <span class="n">y_pred</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">y_pred</span><span class="p">,</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)])</span>
     <span class="n">n_rows</span> <span class="o">=</span> <span class="n">y_pred</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="p">[</span><span class="n">n_rows</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-    <span class="n">sample_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">sample_weight</span><span class="p">,</span> <span class="p">[</span><span class="n">n_rows</span><span class="p">,</span> <span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">sample_weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+    <span class="n">y_true</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="p">[</span><span class="n">n_rows</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">])[:,</span> <span class="mi">0</span><span class="p">]</span>
 
-    <span class="c1"># Extract quantile values into array for vectorized operations</span>
-    <span class="n">quantile_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>  <span class="c1"># shape: (n_quantiles,)</span>
-
-    <span class="c1"># Compute errors for all quantiles at once</span>
-    <span class="n">errors</span> <span class="o">=</span> <span class="n">y_true</span> <span class="o">-</span> <span class="n">y_pred</span>  <span class="c1"># shape: (num_samples, num_quantiles)</span>
-
-    <span class="c1"># Compute masks for all quantiles simultaneously</span>
-    <span class="n">underpredict_mask</span> <span class="o">=</span> <span class="n">errors</span> <span class="o">&gt;=</span> <span class="mi">0</span>  <span class="c1"># y_true &gt;= y_pred, shape: (num_samples, num_quantiles)</span>
-    <span class="n">overpredict_mask</span> <span class="o">=</span> <span class="n">errors</span> <span class="o">&lt;</span> <span class="mi">0</span>  <span class="c1"># y_true &lt; y_pred, shape: (num_samples, num_quantiles)</span>
-
-    <span class="c1"># Vectorized pinball loss computation using broadcasting</span>
-    <span class="c1"># quantiles broadcasts from (num_quantiles,) to (num_samples, num_quantiles)</span>
-    <span class="n">loss</span> <span class="o">=</span> <span class="n">quantiles</span> <span class="o">*</span> <span class="n">underpredict_mask</span> <span class="o">*</span> <span class="n">errors</span> <span class="o">-</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">quantile_values</span><span class="p">)</span> <span class="o">*</span> <span class="n">overpredict_mask</span> <span class="o">*</span> <span class="n">errors</span>
-
-    <span class="c1"># Apply sample weights if provided</span>
-    <span class="k">if</span> <span class="n">sample_weight</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="n">sample_weight</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">sample_weight</span><span class="p">)</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>  <span class="c1"># shape: (num_samples, 1)</span>
-        <span class="n">loss</span> <span class="o">*=</span> <span class="n">sample_weight</span>
-        <span class="n">total_weight</span> <span class="o">=</span> <span class="n">sample_weight</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">total_weight</span> <span class="o">=</span> <span class="n">loss</span><span class="o">.</span><span class="n">size</span>
-
-    <span class="c1"># Return mean loss across all samples and quantiles</span>
-    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">loss</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">total_weight</span><span class="p">)</span></div>
+    <span class="c1"># Average the (sample-weighted) pinball loss across all quantiles.</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">pinball_loss</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">quantile</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">quantile</span><span class="p">),</span> <span class="n">sample_weights</span><span class="o">=</span><span class="n">sample_weight</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
+            <span class="p">]</span>
+        <span class="p">)</span>
+    <span class="p">)</span></div>
 
 </pre></div>
 
