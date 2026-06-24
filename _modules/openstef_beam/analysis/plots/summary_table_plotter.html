@@ -937,20 +937,21 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Apply basic styling to the HTML table</span>
         <span class="k">return</span> <span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">style</span>
-            <span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s1">&#39;class=&quot;dataframe&quot;&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">set_table_attributes</span><span class="p">(</span><span class="s1">&#39;class=&quot;dataframe&quot;&#39;</span><span class="p">)</span>
             <span class="o">.</span><span class="n">set_properties</span><span class="p">(</span><span class="o">**</span><span class="p">{</span><span class="s2">&quot;text-align&quot;</span><span class="p">:</span> <span class="s2">&quot;left&quot;</span><span class="p">,</span> <span class="s2">&quot;padding&quot;</span><span class="p">:</span> <span class="s2">&quot;5px&quot;</span><span class="p">,</span> <span class="s2">&quot;border&quot;</span><span class="p">:</span> <span class="s2">&quot;1px solid #ddd&quot;</span><span class="p">})</span>  <span class="c1"># ty: ignore[invalid-argument-type]</span>
-            <span class="o">.</span><span class="n">set_table_styles</span><span class="p">([</span>
-                <span class="p">{</span>
-                    <span class="s2">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;thead th&quot;</span><span class="p">,</span>
-                    <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="p">[</span>
-                        <span class="p">(</span><span class="s2">&quot;font-weight&quot;</span><span class="p">,</span> <span class="s2">&quot;bold&quot;</span><span class="p">),</span>
-                        <span class="p">(</span><span class="s2">&quot;text-align&quot;</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">),</span>
-                        <span class="p">(</span><span class="s2">&quot;padding&quot;</span><span class="p">,</span> <span class="s2">&quot;8px&quot;</span><span class="p">),</span>
-                        <span class="p">(</span><span class="s2">&quot;border-bottom&quot;</span><span class="p">,</span> <span class="s2">&quot;2px solid #ddd&quot;</span><span class="p">),</span>
-                    <span class="p">],</span>
-                <span class="p">},</span>
-            <span class="p">])</span>
+            <span class="o">.</span><span class="n">set_table_styles</span><span class="p">(</span>
+                <span class="p">[</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;selector&quot;</span><span class="p">:</span> <span class="s2">&quot;thead th&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;props&quot;</span><span class="p">:</span> <span class="p">[</span>
+                            <span class="p">(</span><span class="s2">&quot;font-weight&quot;</span><span class="p">,</span> <span class="s2">&quot;bold&quot;</span><span class="p">),</span>
+                            <span class="p">(</span><span class="s2">&quot;text-align&quot;</span><span class="p">,</span> <span class="s2">&quot;left&quot;</span><span class="p">),</span>
+                            <span class="p">(</span><span class="s2">&quot;padding&quot;</span><span class="p">,</span> <span class="s2">&quot;8px&quot;</span><span class="p">),</span>
+                            <span class="p">(</span><span class="s2">&quot;border-bottom&quot;</span><span class="p">,</span> <span class="s2">&quot;2px solid #ddd&quot;</span><span class="p">),</span>
+                        <span class="p">],</span>
+                    <span class="p">},</span>
+                <span class="p">]</span>
+            <span class="p">)</span>
             <span class="o">.</span><span class="n">hide</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="s2">&quot;index&quot;</span><span class="p">)</span>
             <span class="o">.</span><span class="n">to_html</span><span class="p">()</span>
         <span class="p">)</span></div>

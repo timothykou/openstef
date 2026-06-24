@@ -590,12 +590,14 @@ level.</p>
 <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="p">)</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="p">]</span>
 <span class="n">observed_uncal</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">((</span><span class="n">actuals</span> <span class="o">&lt;=</span> <span class="n">forecast_aligned</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;quantile_P</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="p">]</span>
 
-<span class="n">calibration_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s2">&quot;quantile&quot;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;P</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="p">],</span>
-    <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="n">expected</span><span class="p">,</span>
-    <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="n">observed_uncal</span><span class="p">,</span>
-    <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">o</span> <span class="o">-</span> <span class="n">e</span> <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">observed_uncal</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)],</span>
-<span class="p">})</span>
+<span class="n">calibration_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;quantile&quot;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;P</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="p">],</span>
+        <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="n">expected</span><span class="p">,</span>
+        <span class="s2">&quot;observed&quot;</span><span class="p">:</span> <span class="n">observed_uncal</span><span class="p">,</span>
+        <span class="s2">&quot;error&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">o</span> <span class="o">-</span> <span class="n">e</span> <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">observed_uncal</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Calibration before isotonic correction:&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">calibration_df</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
@@ -650,14 +652,16 @@ appended to its postprocessing pipeline.</p>
 
 <span class="n">observed_cal</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">((</span><span class="n">actuals</span> <span class="o">&lt;=</span> <span class="n">forecast_cal_aligned</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;quantile_P</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">])</span><span class="o">.</span><span class="n">mean</span><span class="p">())</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="p">]</span>
 
-<span class="n">comparison_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-    <span class="s2">&quot;quantile&quot;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;P</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="p">],</span>
-    <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="n">expected</span><span class="p">,</span>
-    <span class="s2">&quot;observed (before)&quot;</span><span class="p">:</span> <span class="n">observed_uncal</span><span class="p">,</span>
-    <span class="s2">&quot;observed (after)&quot;</span><span class="p">:</span> <span class="n">observed_cal</span><span class="p">,</span>
-    <span class="s2">&quot;error (before)&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">o</span> <span class="o">-</span> <span class="n">e</span> <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">observed_uncal</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)],</span>
-    <span class="s2">&quot;error (after)&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">o</span> <span class="o">-</span> <span class="n">e</span> <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">observed_cal</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)],</span>
-<span class="p">})</span>
+<span class="n">comparison_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;quantile&quot;</span><span class="p">:</span> <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;P</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="mi">100</span><span class="p">)</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="p">],</span>
+        <span class="s2">&quot;expected&quot;</span><span class="p">:</span> <span class="n">expected</span><span class="p">,</span>
+        <span class="s2">&quot;observed (before)&quot;</span><span class="p">:</span> <span class="n">observed_uncal</span><span class="p">,</span>
+        <span class="s2">&quot;observed (after)&quot;</span><span class="p">:</span> <span class="n">observed_cal</span><span class="p">,</span>
+        <span class="s2">&quot;error (before)&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">o</span> <span class="o">-</span> <span class="n">e</span> <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">observed_uncal</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)],</span>
+        <span class="s2">&quot;error (after)&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">o</span> <span class="o">-</span> <span class="n">e</span> <span class="k">for</span> <span class="n">o</span><span class="p">,</span> <span class="n">e</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">observed_cal</span><span class="p">,</span> <span class="n">expected</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)],</span>
+    <span class="p">}</span>
+<span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">comparison_df</span><span class="o">.</span><span class="n">to_string</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">))</span>
 </pre></div>
 </div>
@@ -665,7 +669,7 @@ appended to its postprocessing pipeline.</p>
 <div class="cell_output docutils container">
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>quantile  expected  observed (before)  observed (after)  error (before)  error (after)
      P10       0.1           0.000000          0.027586       -0.100000      -0.072414
-     P50       0.5           0.475862          0.648276       -0.024138       0.148276
+     P50       0.5           0.475862          0.634483       -0.024138       0.134483
      P90       0.9           0.882759          0.944828       -0.017241       0.044828
 </pre></div>
 </div>
@@ -727,7 +731,7 @@ appended to its postprocessing pipeline.</p>
 </div>
 </details>
 <div class="cell_output docutils container">
-<img alt="../_images/b2180376152cc651e2b7c1f8fcb331c67de0e149251e7b5107d1fb84f3ae1cf9.png" src="../_images/b2180376152cc651e2b7c1f8fcb331c67de0e149251e7b5107d1fb84f3ae1cf9.png" />
+<img alt="../_images/c005d0b01c28a01d984b6520d45c13d62d9c66bc3cb848448c239a885fd850b3.png" src="../_images/c005d0b01c28a01d984b6520d45c13d62d9c66bc3cb848448c239a885fd850b3.png" />
 </div>
 </div>
 <p>Points closer to the diagonal indicate better calibration.  The isotonic

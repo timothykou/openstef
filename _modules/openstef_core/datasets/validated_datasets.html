@@ -1500,11 +1500,13 @@ window.runMermaid = runMermaid;</script>
         <span class="k">if</span> <span class="n">sample_weights</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">additional_columns</span><span class="p">[</span><span class="n">sample_weight_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">sample_weights</span>
 
-        <span class="n">combined_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-            <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">learner</span><span class="si">}{</span><span class="n">ENSEMBLE_COLUMN_SEP</span><span class="si">}{</span><span class="n">q</span><span class="o">.</span><span class="n">format</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">format</span><span class="p">()]</span>
-            <span class="k">for</span> <span class="n">learner</span><span class="p">,</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
-            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">quantiles</span>
-        <span class="p">})</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="o">**</span><span class="n">additional_columns</span><span class="p">)</span>
+        <span class="n">combined_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">learner</span><span class="si">}{</span><span class="n">ENSEMBLE_COLUMN_SEP</span><span class="si">}{</span><span class="n">q</span><span class="o">.</span><span class="n">format</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">:</span> <span class="n">ds</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">format</span><span class="p">()]</span>
+                <span class="k">for</span> <span class="n">learner</span><span class="p">,</span> <span class="n">ds</span> <span class="ow">in</span> <span class="n">datasets</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+                <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">ds</span><span class="o">.</span><span class="n">quantiles</span>
+            <span class="p">}</span>
+        <span class="p">)</span><span class="o">.</span><span class="n">assign</span><span class="p">(</span><span class="o">**</span><span class="n">additional_columns</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span>
             <span class="n">data</span><span class="o">=</span><span class="n">combined_data</span><span class="p">,</span>

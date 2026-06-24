@@ -1219,14 +1219,16 @@ window.runMermaid = runMermaid;</script>
         <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">NotFittedError</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
 
-        <span class="n">predictions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-            <span class="n">q</span><span class="o">.</span><span class="n">format</span><span class="p">():</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predict_quantile</span><span class="p">(</span>
-                <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get_base_predictions_for_quantile</span><span class="p">(</span><span class="n">quantile</span><span class="o">=</span><span class="n">q</span><span class="p">),</span>
-                <span class="n">additional_features</span><span class="o">=</span><span class="n">additional_features</span><span class="p">,</span>
-                <span class="n">quantile</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
-            <span class="p">)</span>
-            <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span>
-        <span class="p">})</span>
+        <span class="n">predictions</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="n">q</span><span class="o">.</span><span class="n">format</span><span class="p">():</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predict_quantile</span><span class="p">(</span>
+                    <span class="n">dataset</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">get_base_predictions_for_quantile</span><span class="p">(</span><span class="n">quantile</span><span class="o">=</span><span class="n">q</span><span class="p">),</span>
+                    <span class="n">additional_features</span><span class="o">=</span><span class="n">additional_features</span><span class="p">,</span>
+                    <span class="n">quantile</span><span class="o">=</span><span class="n">q</span><span class="p">,</span>
+                <span class="p">)</span>
+                <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
         <span class="n">target_series</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">target_series</span>
         <span class="k">if</span> <span class="n">target_series</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">predictions</span><span class="p">[</span><span class="n">data</span><span class="o">.</span><span class="n">target_column</span><span class="p">]</span> <span class="o">=</span> <span class="n">target_series</span>

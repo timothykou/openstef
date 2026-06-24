@@ -1107,7 +1107,7 @@ window.runMermaid = runMermaid;</script>
             <span class="n">_logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;Skipping target&quot;</span><span class="p">)</span>
             <span class="k">return</span>
 
-        <span class="k">try</span><span class="p">:</span>  <span class="c1"># noqa: PLW0717 - single try isolates all per-target work so one failure skips just that target</span>
+        <span class="k">try</span><span class="p">:</span>
             <span class="n">forecaster</span> <span class="o">=</span> <span class="n">model_factory</span><span class="p">(</span><span class="n">context</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
 
             <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">storage</span><span class="o">.</span><span class="n">has_backtest_output</span><span class="p">(</span><span class="n">target</span><span class="p">):</span>

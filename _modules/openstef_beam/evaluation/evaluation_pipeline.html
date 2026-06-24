@@ -1167,20 +1167,22 @@ window.runMermaid = runMermaid;</script>
 
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">window_metric_providers</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
             <span class="k">for</span> <span class="n">window</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">windows</span><span class="p">:</span>
-                <span class="n">windowed_metrics</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span>
-                    <span class="n">SubsetMetric</span><span class="p">(</span>
-                        <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
-                        <span class="n">timestamp</span><span class="o">=</span><span class="n">window_timestamp</span><span class="p">,</span>
-                        <span class="n">metrics</span><span class="o">=</span><span class="n">merge_quantile_metrics</span><span class="p">([</span>
-                            <span class="n">provider</span><span class="p">(</span><span class="n">window_subset</span><span class="p">)</span> <span class="k">for</span> <span class="n">provider</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_metric_providers</span>
-                        <span class="p">]),</span>
-                    <span class="p">)</span>
-                    <span class="k">for</span> <span class="n">window_timestamp</span><span class="p">,</span> <span class="n">window_subset</span> <span class="ow">in</span> <span class="n">iterate_subsets_by_window</span><span class="p">(</span>
-                        <span class="n">subset</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span>
-                        <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
-                        <span class="n">reference_date</span><span class="o">=</span><span class="n">reference_date</span><span class="p">,</span>
-                    <span class="p">)</span>
-                <span class="p">])</span>
+                <span class="n">windowed_metrics</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span>
+                    <span class="p">[</span>
+                        <span class="n">SubsetMetric</span><span class="p">(</span>
+                            <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+                            <span class="n">timestamp</span><span class="o">=</span><span class="n">window_timestamp</span><span class="p">,</span>
+                            <span class="n">metrics</span><span class="o">=</span><span class="n">merge_quantile_metrics</span><span class="p">(</span>
+                                <span class="p">[</span><span class="n">provider</span><span class="p">(</span><span class="n">window_subset</span><span class="p">)</span> <span class="k">for</span> <span class="n">provider</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">window_metric_providers</span><span class="p">]</span>
+                            <span class="p">),</span>
+                        <span class="p">)</span>
+                        <span class="k">for</span> <span class="n">window_timestamp</span><span class="p">,</span> <span class="n">window_subset</span> <span class="ow">in</span> <span class="n">iterate_subsets_by_window</span><span class="p">(</span>
+                            <span class="n">subset</span><span class="o">=</span><span class="n">subset</span><span class="p">,</span>
+                            <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span>
+                            <span class="n">reference_date</span><span class="o">=</span><span class="n">reference_date</span><span class="p">,</span>
+                        <span class="p">)</span>
+                    <span class="p">]</span>
+                <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">reference_date</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="c1"># When reference data is set, user likely wants metrics for that specific time frame</span>

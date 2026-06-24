@@ -1111,10 +1111,12 @@ window.runMermaid = runMermaid;</script>
         <span class="k">if</span> <span class="n">name</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">name</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Limit </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_limits</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_limits</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-            <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
-            <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
-        <span class="p">})</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_limits</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;value&quot;</span><span class="p">:</span> <span class="n">value</span><span class="p">,</span>
+                <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
 
         <span class="k">return</span> <span class="bp">self</span></div>
 
@@ -1281,14 +1283,16 @@ window.runMermaid = runMermaid;</script>
                 <span class="k">if</span> <span class="n">lower_quantile</span> <span class="o">==</span> <span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MEDIAN_QUANTILE</span><span class="p">):</span>
                     <span class="k">continue</span>
 
-                <span class="n">bands</span><span class="o">.</span><span class="n">append</span><span class="p">({</span>
-                    <span class="s2">&quot;model_name&quot;</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span>
-                    <span class="s2">&quot;model_index&quot;</span><span class="p">:</span> <span class="n">model_index</span><span class="p">,</span>
-                    <span class="s2">&quot;lower_quantile&quot;</span><span class="p">:</span> <span class="n">lower_quantile</span><span class="p">,</span>
-                    <span class="s2">&quot;upper_quantile&quot;</span><span class="p">:</span> <span class="n">upper_quantile</span><span class="p">,</span>
-                    <span class="s2">&quot;lower_data&quot;</span><span class="p">:</span> <span class="n">quantiles</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;quantile_P</span><span class="si">{</span><span class="n">lower_quantile</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
-                    <span class="s2">&quot;upper_data&quot;</span><span class="p">:</span> <span class="n">quantiles</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;quantile_P</span><span class="si">{</span><span class="n">upper_quantile</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
-                <span class="p">})</span>
+                <span class="n">bands</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                    <span class="p">{</span>
+                        <span class="s2">&quot;model_name&quot;</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span>
+                        <span class="s2">&quot;model_index&quot;</span><span class="p">:</span> <span class="n">model_index</span><span class="p">,</span>
+                        <span class="s2">&quot;lower_quantile&quot;</span><span class="p">:</span> <span class="n">lower_quantile</span><span class="p">,</span>
+                        <span class="s2">&quot;upper_quantile&quot;</span><span class="p">:</span> <span class="n">upper_quantile</span><span class="p">,</span>
+                        <span class="s2">&quot;lower_data&quot;</span><span class="p">:</span> <span class="n">quantiles</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;quantile_P</span><span class="si">{</span><span class="n">lower_quantile</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+                        <span class="s2">&quot;upper_data&quot;</span><span class="p">:</span> <span class="n">quantiles</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;quantile_P</span><span class="si">{</span><span class="n">upper_quantile</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">],</span>
+                    <span class="p">}</span>
+                <span class="p">)</span>
         <span class="k">return</span> <span class="n">bands</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_prepare_forecast_lines</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">LineData</span><span class="p">]:</span>

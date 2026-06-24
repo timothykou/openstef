@@ -1000,11 +1000,13 @@ window.runMermaid = runMermaid;</script>
             <span class="c1"># Create quantile labels</span>
             <span class="n">quantile_labels</span> <span class="o">=</span> <span class="p">[</span><span class="n">q</span><span class="o">.</span><span class="n">format</span><span class="p">()</span> <span class="k">for</span> <span class="n">q</span> <span class="ow">in</span> <span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;forecasted_prob&quot;</span><span class="p">]]</span>
 
-            <span class="n">model_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-                <span class="s2">&quot;Model&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">calibration_errors</span><span class="p">),</span>
-                <span class="s2">&quot;Quantile&quot;</span><span class="p">:</span> <span class="n">quantile_labels</span><span class="p">,</span>
-                <span class="s2">&quot;Calibration_Error&quot;</span><span class="p">:</span> <span class="n">calibration_errors</span><span class="p">,</span>
-            <span class="p">})</span>
+            <span class="n">model_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;Model&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">calibration_errors</span><span class="p">),</span>
+                    <span class="s2">&quot;Quantile&quot;</span><span class="p">:</span> <span class="n">quantile_labels</span><span class="p">,</span>
+                    <span class="s2">&quot;Calibration_Error&quot;</span><span class="p">:</span> <span class="n">calibration_errors</span><span class="p">,</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
             <span class="n">model_df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_df</span><span class="p">)</span>
 
         <span class="n">models_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">model_df_list</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

@@ -1014,11 +1014,13 @@ window.runMermaid = runMermaid;</script>
         <span class="c1"># Combine all model data into a single DataFrame</span>
         <span class="n">model_df_list</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">model_data</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">models_data</span><span class="p">:</span>
-            <span class="n">model_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span>
-                <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]),</span>
-                <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">],</span>
-                <span class="s2">&quot;metric_value&quot;</span><span class="p">:</span> <span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;metric_value&quot;</span><span class="p">],</span>
-            <span class="p">})</span>
+            <span class="n">model_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">&quot;model&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;model&quot;</span><span class="p">]]</span> <span class="o">*</span> <span class="nb">len</span><span class="p">(</span><span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">]),</span>
+                    <span class="s2">&quot;target&quot;</span><span class="p">:</span> <span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;target&quot;</span><span class="p">],</span>
+                    <span class="s2">&quot;metric_value&quot;</span><span class="p">:</span> <span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;metric_value&quot;</span><span class="p">],</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
             <span class="n">model_df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">model_df</span><span class="p">)</span>
 
         <span class="n">models_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">model_df_list</span><span class="p">,</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>

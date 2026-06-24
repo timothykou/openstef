@@ -1072,16 +1072,18 @@ window.runMermaid = runMermaid;</script>
     <span class="nd">@property</span>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">metric_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="nb">frozenset</span><span class="p">({</span>
-            <span class="s2">&quot;num_predicted_peaks&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;num_true_peaks&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;recall&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;effective_precision&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;effective_recall&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;F</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-            <span class="sa">f</span><span class="s2">&quot;effective_F</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
-        <span class="p">})</span>
+        <span class="k">return</span> <span class="nb">frozenset</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;num_predicted_peaks&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;num_true_peaks&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;precision&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;recall&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;effective_precision&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;effective_recall&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;F</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;effective_F</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">beta</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
 
     <span class="n">limit_pos</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>

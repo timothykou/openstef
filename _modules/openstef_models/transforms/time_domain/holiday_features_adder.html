@@ -964,8 +964,7 @@ window.runMermaid = runMermaid;</script>
 
         <span class="c1"># Merge dates with holidays</span>
         <span class="n">merged</span> <span class="o">=</span> <span class="p">(</span>
-            <span class="n">pd</span>
-            <span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
+            <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">index</span><span class="o">.</span><span class="n">date</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">index</span><span class="p">)</span>
             <span class="o">.</span><span class="n">to_frame</span><span class="p">(</span><span class="s2">&quot;date&quot;</span><span class="p">)</span>
             <span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">holidays_df</span><span class="p">[[</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="s2">&quot;sanitized_name&quot;</span><span class="p">]],</span> <span class="n">on</span><span class="o">=</span><span class="s2">&quot;date&quot;</span><span class="p">,</span> <span class="n">how</span><span class="o">=</span><span class="s2">&quot;left&quot;</span><span class="p">)</span>
             <span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="n">index</span><span class="p">)</span>
@@ -1030,11 +1029,13 @@ window.runMermaid = runMermaid;</script>
     <span class="n">country_holidays</span> <span class="o">=</span> <span class="n">holidays</span><span class="o">.</span><span class="n">country_holidays</span><span class="p">(</span>
         <span class="n">country</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">country_code</span><span class="p">),</span> <span class="n">categories</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;public&quot;</span><span class="p">],</span> <span class="n">years</span><span class="o">=</span><span class="n">reference_years</span><span class="p">,</span> <span class="n">language</span><span class="o">=</span><span class="s2">&quot;en_US&quot;</span>
     <span class="p">)</span>
-    <span class="k">return</span> <span class="nb">sorted</span><span class="p">([</span>
-        <span class="n">sanitize_holiday_name</span><span class="p">(</span><span class="n">holiday_name</span><span class="p">)</span>
-        <span class="k">for</span> <span class="n">holiday_name</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">country_holidays</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
-        <span class="k">if</span> <span class="n">sanitize_holiday_name</span><span class="p">(</span><span class="n">holiday_name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sanitize_holiday_name</span><span class="p">(</span><span class="n">holiday_name</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reserved_features</span>
-    <span class="p">])</span></div>
+    <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">sanitize_holiday_name</span><span class="p">(</span><span class="n">holiday_name</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">holiday_name</span> <span class="ow">in</span> <span class="nb">set</span><span class="p">(</span><span class="n">country_holidays</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">sanitize_holiday_name</span><span class="p">(</span><span class="n">holiday_name</span><span class="p">)</span> <span class="ow">and</span> <span class="n">sanitize_holiday_name</span><span class="p">(</span><span class="n">holiday_name</span><span class="p">)</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">reserved_features</span>
+        <span class="p">]</span>
+    <span class="p">)</span></div>
 
 
 
