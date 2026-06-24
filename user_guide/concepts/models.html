@@ -968,17 +968,6 @@ return a <a class="reference internal" href="../../api/generated/openstef_core.d
 a Forecaster - it is solely responsible for the mathematical prediction step.</p>
 <p>All forecasters implement the <code class="xref py py-class docutils literal notranslate"><span class="pre">Forecaster</span></code> interface with <code class="docutils literal notranslate"><span class="pre">fit()</span></code> and <code class="docutils literal notranslate"><span class="pre">predict()</span></code>
 methods.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><strong>Output horizon guarantee</strong>: a forecaster’s <code class="docutils literal notranslate"><span class="pre">predict()</span></code> only returns timestamps
-in the interval <code class="docutils literal notranslate"><span class="pre">[forecast_start,</span> <span class="pre">forecast_start</span> <span class="pre">+</span> <span class="pre">max_horizon]</span></code>. Input rows
-beyond <code class="docutils literal notranslate"><span class="pre">max_horizon</span></code> are silently discarded before the model runs. This is
-enforced by passing <code class="docutils literal notranslate"><span class="pre">horizon=self.max_horizon</span></code> to
-<a class="reference internal" href="../../api/generated/openstef_core.datasets.ForecastInputDataset.html#openstef_core.datasets.ForecastInputDataset.input_data" title="openstef_core.datasets.ForecastInputDataset.input_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">input_data()</span></code></a>
-inside every concrete <code class="docutils literal notranslate"><span class="pre">predict()</span></code> implementation. You can therefore safely pass
-a <a class="reference internal" href="../../api/generated/openstef_core.datasets.ForecastInputDataset.html#openstef_core.datasets.ForecastInputDataset" title="openstef_core.datasets.ForecastInputDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForecastInputDataset</span></code></a> containing more data than
-the forecaster needs without worrying about spurious predictions far into the future.</p>
-</div>
 </section>
 <section id="transforms">
 <h3>Transforms<a class="headerlink" href="#transforms" title="Link to this heading">#</a></h3>

@@ -1191,14 +1191,8 @@ horizons, hyperparams, etc.) as Pydantic model fields. Mutable runtime state
 initialised in <code class="docutils literal notranslate"><span class="pre">model_post_init</span></code>.</p>
 <p class="rubric">Invariants</p>
 <ul class="simple">
-<li><p>Predictions must include all quantiles specified in the configuration.</p></li>
-<li><p>predict_batch() only called when supports_batching returns True.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">predict()</span></code> only returns timestamps in the interval
-<code class="docutils literal notranslate"><span class="pre">[forecast_start,</span> <span class="pre">forecast_start</span> <span class="pre">+</span> <span class="pre">max_horizon]</span></code>.  Any input rows
-beyond <code class="docutils literal notranslate"><span class="pre">max_horizon</span></code> are silently discarded.  This is enforced by
-passing <code class="docutils literal notranslate"><span class="pre">horizon=self.max_horizon</span></code> to
-<a class="reference internal" href="openstef_core.datasets.ForecastInputDataset.html#openstef_core.datasets.ForecastInputDataset.input_data" title="openstef_core.datasets.ForecastInputDataset.input_data"><code class="xref py py-meth docutils literal notranslate"><span class="pre">input_data()</span></code></a>
-inside every concrete <code class="docutils literal notranslate"><span class="pre">predict()</span></code> implementation.</p></li>
+<li><p>Predictions must include all quantiles specified in the configuration</p></li>
+<li><p>predict_batch() only called when supports_batching returns True</p></li>
 </ul>
 <p class="rubric">Example</p>
 <p>Creating a forecaster with multiple horizons</p>

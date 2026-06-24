@@ -1013,14 +1013,12 @@ window.runMermaid = runMermaid;</script>
 
 <div class="viewcode-block" id="ForecastInputDataset.input_data">
 <a class="viewcode-back" href="../../../api/generated/openstef_core.datasets.validated_datasets.ForecastInputDataset.html#openstef_core.datasets.ForecastInputDataset.input_data">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">horizon</span><span class="p">:</span> <span class="n">LeadTime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start</span><span class="p">:</span> <span class="n">datetime</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Extract the input features excluding the target column.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            start: Optional datetime to filter data from. If provided, only includes</span>
 <span class="sd">                data points with timestamps at or after this date.</span>
-<span class="sd">            horizon: Optional maximum horizon to limit returned data. If provided, only</span>
-<span class="sd">                includes data points with timestamps at or before forecast_start + horizon.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            DataFrame containing input features with original datetime index.</span>
@@ -1032,9 +1030,6 @@ window.runMermaid = runMermaid;</script>
         <span class="n">input_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="n">drop_columns</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s2">&quot;ignore&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">start</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">input_data</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="n">input_data</span><span class="o">.</span><span class="n">index</span> <span class="o">&gt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">start</span><span class="p">)]</span>
-        <span class="k">if</span> <span class="n">horizon</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="n">end</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forecast_start</span> <span class="o">+</span> <span class="n">horizon</span><span class="o">.</span><span class="n">value</span>
-            <span class="n">input_data</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="n">input_data</span><span class="o">.</span><span class="n">index</span> <span class="o">&lt;=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Timestamp</span><span class="p">(</span><span class="n">end</span><span class="p">)]</span>
 
         <span class="k">return</span> <span class="n">input_data</span></div>
 

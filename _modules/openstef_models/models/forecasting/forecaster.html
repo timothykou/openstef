@@ -921,14 +921,8 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">    initialised in ``model_post_init``.</span>
 
 <span class="sd">    Invariants:</span>
-<span class="sd">        - Predictions must include all quantiles specified in the configuration.</span>
-<span class="sd">        - predict_batch() only called when supports_batching returns True.</span>
-<span class="sd">        - ``predict()`` only returns timestamps in the interval</span>
-<span class="sd">          ``[forecast_start, forecast_start + max_horizon]``.  Any input rows</span>
-<span class="sd">          beyond ``max_horizon`` are silently discarded.  This is enforced by</span>
-<span class="sd">          passing ``horizon=self.max_horizon`` to</span>
-<span class="sd">          :meth:`~openstef_core.datasets.ForecastInputDataset.input_data`</span>
-<span class="sd">          inside every concrete ``predict()`` implementation.</span>
+<span class="sd">        - Predictions must include all quantiles specified in the configuration</span>
+<span class="sd">        - predict_batch() only called when supports_batching returns True</span>
 
 <span class="sd">    Example:</span>
 <span class="sd">        Creating a forecaster with multiple horizons</span>
