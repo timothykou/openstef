@@ -891,6 +891,8 @@ window.runMermaid = runMermaid;</script>
 
 <span class="n">MIN_WEEKEND_IDX</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span>  <span class="c1"># Saturday</span>
 <span class="n">SUNDAY_IDX</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span>
+<span class="n">MONTHS_PER_YEAR</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="n">QUARTERS_PER_YEAR</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span>
 
 
 <div class="viewcode-block" id="DatetimeFeaturesAdder">
@@ -961,9 +963,12 @@ window.runMermaid = runMermaid;</script>
                 <span class="p">)</span>
             <span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">month_dummies</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="c1"># Fixed categories keep the one-hot columns stable regardless of the data span.</span>
+            <span class="n">months</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MONTHS_PER_YEAR</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
+            <span class="n">month_dummies</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">months</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;month&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
             <span class="n">month_dummies</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span>
-            <span class="n">quarter_dummies</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">quarter</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;quarter&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
+            <span class="n">quarters</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Categorical</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">quarter</span><span class="p">,</span> <span class="n">categories</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">QUARTERS_PER_YEAR</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)))</span>
+            <span class="n">quarter_dummies</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">quarters</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="s2">&quot;quarter&quot;</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">int</span><span class="p">)</span>
             <span class="n">quarter_dummies</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">index</span>
             <span class="n">features</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="n">month_dummies</span><span class="p">,</span> <span class="n">quarter_dummies</span><span class="p">])</span>
 
@@ -977,13 +982,14 @@ window.runMermaid = runMermaid;</script>
 <a class="viewcode-back" href="../../../../api/generated/openstef_models.transforms.time_domain.datetime_features_adder.DatetimeFeaturesAdder.html#openstef_models.transforms.time_domain.DatetimeFeaturesAdder.features_added">[docs]</a>
     <span class="nd">@override</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">features_added</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
-        <span class="k">return</span> <span class="p">[</span>
-            <span class="s2">&quot;is_week_day&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;is_weekend_day&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;is_sunday&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;month_of_year&quot;</span><span class="p">,</span>
-            <span class="s2">&quot;quarter_of_year&quot;</span><span class="p">,</span>
-        <span class="p">]</span></div>
+        <span class="n">base</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;is_week_day&quot;</span><span class="p">,</span> <span class="s2">&quot;is_weekend_day&quot;</span><span class="p">,</span> <span class="s2">&quot;is_sunday&quot;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">onehot_encode</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[</span>
+                <span class="o">*</span><span class="n">base</span><span class="p">,</span>
+                <span class="o">*</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;month_</span><span class="si">{</span><span class="n">month</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">MONTHS_PER_YEAR</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)],</span>
+                <span class="o">*</span><span class="p">[</span><span class="sa">f</span><span class="s2">&quot;quarter_</span><span class="si">{</span><span class="n">quarter</span><span class="si">}</span><span class="s2">&quot;</span> <span class="k">for</span> <span class="n">quarter</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">QUARTERS_PER_YEAR</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)],</span>
+            <span class="p">]</span>
+        <span class="k">return</span> <span class="p">[</span><span class="o">*</span><span class="n">base</span><span class="p">,</span> <span class="s2">&quot;month_of_year&quot;</span><span class="p">,</span> <span class="s2">&quot;quarter_of_year&quot;</span><span class="p">]</span></div>
 </div>
 
 
