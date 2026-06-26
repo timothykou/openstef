@@ -33,6 +33,7 @@
 # - Build a forecasting workflow from a config with `create_forecasting_workflow`
 # - Feed load history plus known-future weather and read the predicted quantiles
 # - Plot a P30 / P50 / P70 forecast
+# - Forecast several origins at once with a single `predict_batch` call
 #
 # ```{note}
 # Chronos-2 is zero-shot: it is pretrained and needs no `fit()`. You give it a
@@ -63,6 +64,7 @@ logger = setup_notebook_logging(
         "openstef_core.datasets",
     ),
 )
+
 
 # %% [markdown]
 # ## Assemble the workflow
@@ -111,6 +113,7 @@ workflow = create_forecasting_workflow(
 print(f"is_fitted: {workflow.model.is_fitted}")
 print(f"quantiles: {workflow.model.quantiles}")
 
+
 # %% [markdown]
 # ## Load real load history and weather
 #
@@ -139,6 +142,7 @@ window = dataset.filter_by_range(start=context_start, end=forecast_start + HORIZ
 
 print(f"Window:   {context_start:%Y-%m-%d} to {forecast_start + HORIZON.value:%Y-%m-%d}, {len(window.data):,} rows")
 
+
 # %% [markdown]
 # ## Forecast
 #
@@ -154,9 +158,11 @@ print(f"Forecast rows: {len(forecast.data)}")
 print(f"Quantiles:     {forecast.quantiles}")
 forecast.data.head()
 
+
 # %% tags=["remove-cell"]
 assert len(forecast.data) > 1, "Expected a multi-step forecast"
 assert forecast.quantiles == [Q(0.3), Q(0.5), Q(0.7)], "Quantiles should match the request"
+
 
 # %% [markdown]
 # ## Visualize the forecast
@@ -190,6 +196,75 @@ fig.update_layout(
     height=500,
 )
 fig.show()
+
+
+# %% [markdown]
+# ## Forecast many origins in one call
+#
+# Foundation models shine when you forecast **many** series or origins at once.
+# Instead of looping `predict` per window, hand the whole batch to `predict_batch`:
+# it concatenates the windows and runs the ONNX session a **single** time, returning
+# one forecast per window in input order. The numbers are identical to the serial
+# loop, batching is purely a throughput optimization.
+#
+# Here we carve four forecast origins two weeks apart out of the same dataset. While this is useful for backtesting, in a live setting you would typically forecast many different locations or targets at once. Each
+# window keeps its own 60 days of history plus the 7-day horizon of known-future
+# weather.
+
+# %%
+forecast_starts = [
+    datetime.fromisoformat("2024-09-15T00:00:00Z"),
+    datetime.fromisoformat("2024-09-29T00:00:00Z"),
+    datetime.fromisoformat("2024-10-13T00:00:00Z"),
+    datetime.fromisoformat("2024-10-27T00:00:00Z"),
+]
+windows = [
+    dataset.filter_by_range(start=start - timedelta(days=60), end=start + HORIZON.value) for start in forecast_starts
+]
+
+batched = workflow.predict_batch(windows, forecast_start=forecast_starts)
+print(f"Forecasts returned: {len(batched)} (one backend call for the whole batch)")
+
+
+# %% tags=["remove-cell"]
+from openstef_core.testing import assert_timeseries_equal
+
+serial = [
+    workflow.predict(window, forecast_start=start) for window, start in zip(windows, forecast_starts, strict=True)
+]
+assert len(batched) == len(serial), "Batched and serial runs should return the same number of forecasts"
+for batch_item, serial_item in zip(batched, serial, strict=True):
+    assert_timeseries_equal(batch_item, serial_item)
+
+
+# %% [markdown]
+# Each window is an independent 7-day forecast. We overlay the four median forecasts
+# against the actual load to see how the same zero-shot model tracks the series at
+# different points in time.
+
+# %% tags=["hide-input"]
+batch_actuals = dataset.filter_by_range(
+    start=forecast_starts[0] - timedelta(days=3),
+    end=forecast_starts[-1] + HORIZON.value,
+).data["load"]
+
+batch_plotter = ForecastTimeSeriesPlotter().add_measurements(measurements=batch_actuals)
+for start, batch_forecast in zip(forecast_starts, batched, strict=True):
+    batch_plotter = batch_plotter.add_model(
+        model_name=f"Chronos-2 {start:%b %d}",
+        forecast=batch_forecast.median_series,
+        quantiles=batch_forecast.quantiles_data,
+    )
+
+fig = cast(Any, batch_plotter.plot())
+fig.update_layout(
+    title="Chronos-2 batched zero-shot forecasts vs actuals",
+    yaxis_title="Load (MW)",
+    xaxis_title="Time",
+    height=500,
+)
+fig.show()
+
 
 # %% [markdown]
 # ## Next steps

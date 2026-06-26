@@ -503,6 +503,7 @@ known weather covariates.</p>
 <li><p>Build a forecasting workflow from a config with <code class="docutils literal notranslate"><span class="pre">create_forecasting_workflow</span></code></p></li>
 <li><p>Feed load history plus known-future weather and read the predicted quantiles</p></li>
 <li><p>Plot a P30 / P50 / P70 forecast</p></li>
+<li><p>Forecast several origins at once with a single <code class="docutils literal notranslate"><span class="pre">predict_batch</span></code> call</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -561,16 +562,13 @@ session once, and wraps a <code class="docutils literal notranslate"><span class
 </div>
 </div>
 <div class="cell_output docutils container">
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-06-26 09:33:42.741503923 [W:onnxruntime:Default, device_discovery.cc:133 GetPciBusId] Skipping pci_bus_id for PCI path at &quot;/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/VMBUS:00/5620e0c7-8062-4dce-aeb7-520c7ef76171&quot; because filename &quot;5620e0c7-8062-4dce-aeb7-520c7ef76171&quot; did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>2026-06-26 12:57:43.302593954 [W:onnxruntime:Default, device_discovery.cc:133 GetPciBusId] Skipping pci_bus_id for PCI path at &quot;/sys/devices/LNXSYSTM:00/LNXSYBUS:00/ACPI0004:00/MSFT1000:00/5620e0c7-8062-4dce-aeb7-520c7ef76171&quot; because filename &quot;5620e0c7-8062-4dce-aeb7-520c7ef76171&quot; did not match expected pattern of [0-9a-f]+:[0-9a-f]+:[0-9a-f]+[.][0-9a-f]+
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Warning: You are sending unauthenticated requests to the HF Hub. Please set a HF_TOKEN to enable higher rate limits and faster downloads.
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2026-06-26 12:57:47,115][INFO] DefaultProviderPolicy selected execution-provider chain [&#39;CPUExecutionProvider&#39;] for checkpoint &#39;chronos2&#39; (precision=fp32, static_shapes=False) on linux.
 </pre></div>
 </div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2026-06-26 09:33:46,823][INFO] DefaultProviderPolicy selected execution-provider chain [&#39;CPUExecutionProvider&#39;] for checkpoint &#39;chronos2&#39; (precision=fp32, static_shapes=False) on linux.
-</pre></div>
-</div>
-<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2026-06-26 09:33:47,092][INFO] ONNX Runtime session built; realized providers: [&#39;CPUExecutionProvider&#39;].
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[2026-06-26 12:57:47,384][INFO] ONNX Runtime session built; realized providers: [&#39;CPUExecutionProvider&#39;].
 </pre></div>
 </div>
 <div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>is_fitted: True
@@ -753,6 +751,79 @@ overlays the actual load against the median forecast with a shaded quantile band
 </div>
 </div>
 </section>
+<section id="forecast-many-origins-in-one-call">
+<h2>Forecast many origins in one call<a class="headerlink" href="#forecast-many-origins-in-one-call" title="Link to this heading">#</a></h2>
+<p>Foundation models shine when you forecast <strong>many</strong> series or origins at once.
+Instead of looping <code class="docutils literal notranslate"><span class="pre">predict</span></code> per window, hand the whole batch to <code class="docutils literal notranslate"><span class="pre">predict_batch</span></code>:
+it concatenates the windows and runs the ONNX session a <strong>single</strong> time, returning
+one forecast per window in input order. The numbers are identical to the serial
+loop, batching is purely a throughput optimization.</p>
+<p>Here we carve four forecast origins two weeks apart out of the same dataset. While this is useful for backtesting, in a live setting you would typically forecast many different locations or targets at once. Each
+window keeps its own 60 days of history plus the 7-day horizon of known-future
+weather.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">forecast_starts</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="s2">&quot;2024-09-15T00:00:00Z&quot;</span><span class="p">),</span>
+    <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="s2">&quot;2024-09-29T00:00:00Z&quot;</span><span class="p">),</span>
+    <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="s2">&quot;2024-10-13T00:00:00Z&quot;</span><span class="p">),</span>
+    <span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="s2">&quot;2024-10-27T00:00:00Z&quot;</span><span class="p">),</span>
+<span class="p">]</span>
+<span class="n">windows</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="n">dataset</span><span class="o">.</span><span class="n">filter_by_range</span><span class="p">(</span><span class="n">start</span><span class="o">=</span><span class="n">start</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">60</span><span class="p">),</span> <span class="n">end</span><span class="o">=</span><span class="n">start</span> <span class="o">+</span> <span class="n">HORIZON</span><span class="o">.</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">start</span> <span class="ow">in</span> <span class="n">forecast_starts</span>
+<span class="p">]</span>
+
+<span class="n">batched</span> <span class="o">=</span> <span class="n">workflow</span><span class="o">.</span><span class="n">predict_batch</span><span class="p">(</span><span class="n">windows</span><span class="p">,</span> <span class="n">forecast_start</span><span class="o">=</span><span class="n">forecast_starts</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Forecasts returned: </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">batched</span><span class="p">)</span><span class="si">}</span><span class="s2"> (one backend call for the whole batch)&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Forecasts returned: 4 (one backend call for the whole batch)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Each window is an independent 7-day forecast. We overlay the four median forecasts
+against the actual load to see how the same zero-shot model tracks the series at
+different points in time.</p>
+<div class="cell tag_hide-input docutils container">
+<details class="admonition hide above-input">
+<summary aria-label="Toggle hidden content">
+<p class="collapsed admonition-title">Show code cell source</p>
+<p class="expanded admonition-title">Hide code cell source</p>
+</summary>
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">batch_actuals</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">filter_by_range</span><span class="p">(</span>
+    <span class="n">start</span><span class="o">=</span><span class="n">forecast_starts</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>
+    <span class="n">end</span><span class="o">=</span><span class="n">forecast_starts</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">HORIZON</span><span class="o">.</span><span class="n">value</span><span class="p">,</span>
+<span class="p">)</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;load&quot;</span><span class="p">]</span>
+
+<span class="n">batch_plotter</span> <span class="o">=</span> <span class="n">ForecastTimeSeriesPlotter</span><span class="p">()</span><span class="o">.</span><span class="n">add_measurements</span><span class="p">(</span><span class="n">measurements</span><span class="o">=</span><span class="n">batch_actuals</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">start</span><span class="p">,</span> <span class="n">batch_forecast</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">forecast_starts</span><span class="p">,</span> <span class="n">batched</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">batch_plotter</span> <span class="o">=</span> <span class="n">batch_plotter</span><span class="o">.</span><span class="n">add_model</span><span class="p">(</span>
+        <span class="n">model_name</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;Chronos-2 </span><span class="si">{</span><span class="n">start</span><span class="si">:</span><span class="s2">%b %d</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+        <span class="n">forecast</span><span class="o">=</span><span class="n">batch_forecast</span><span class="o">.</span><span class="n">median_series</span><span class="p">,</span>
+        <span class="n">quantiles</span><span class="o">=</span><span class="n">batch_forecast</span><span class="o">.</span><span class="n">quantiles_data</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<span class="n">fig</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">Any</span><span class="p">,</span> <span class="n">batch_plotter</span><span class="o">.</span><span class="n">plot</span><span class="p">())</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">update_layout</span><span class="p">(</span>
+    <span class="n">title</span><span class="o">=</span><span class="s2">&quot;Chronos-2 batched zero-shot forecasts vs actuals&quot;</span><span class="p">,</span>
+    <span class="n">yaxis_title</span><span class="o">=</span><span class="s2">&quot;Load (MW)&quot;</span><span class="p">,</span>
+    <span class="n">xaxis_title</span><span class="o">=</span><span class="s2">&quot;Time&quot;</span><span class="p">,</span>
+    <span class="n">height</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</details>
+<div class="cell_output docutils container">
+<img alt="../_images/73ad6f0a2b007a10deabe3c58455405d9691607b4bbaa50c94b0efe650411790.png" src="../_images/73ad6f0a2b007a10deabe3c58455405d9691607b4bbaa50c94b0efe650411790.png" />
+</div>
+</div>
+</section>
 <section id="next-steps">
 <h2>Next steps<a class="headerlink" href="#next-steps" title="Link to this heading">#</a></h2>
 <ul class="simple">
@@ -817,6 +888,7 @@ session once and reusing it across every window.</p></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#load-real-load-history-and-weather">Load real load history and weather</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forecast">Forecast</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#visualize-the-forecast">Visualize the forecast</a></li>
+<li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#forecast-many-origins-in-one-call">Forecast many origins in one call</a></li>
 <li class="toc-h2 nav-item toc-entry"><a class="reference internal nav-link" href="#next-steps">Next steps</a></li>
 </ul>
   </nav></div>

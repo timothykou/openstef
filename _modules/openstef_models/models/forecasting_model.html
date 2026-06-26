@@ -883,6 +883,7 @@ window.runMermaid = runMermaid;</script>
 
 <span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">abstractmethod</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">collections.abc</span><span class="w"> </span><span class="kn">import</span> <span class="n">Sequence</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">datetime</span><span class="w"> </span><span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">functools</span><span class="w"> </span><span class="kn">import</span> <span class="n">partial</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Self</span><span class="p">,</span> <span class="n">cast</span><span class="p">,</span> <span class="n">override</span>
@@ -900,7 +901,7 @@ window.runMermaid = runMermaid;</script>
     <span class="n">TimeSeriesDataset</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.datasets.timeseries_dataset</span><span class="w"> </span><span class="kn">import</span> <span class="n">validate_horizons_present</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InsufficientlyCompleteError</span><span class="p">,</span> <span class="n">NotFittedError</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.exceptions</span><span class="w"> </span><span class="kn">import</span> <span class="n">InsufficientlyCompleteError</span><span class="p">,</span> <span class="n">NotFittedError</span><span class="p">,</span> <span class="n">PredictError</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">HyperParams</span><span class="p">,</span> <span class="n">Predictor</span><span class="p">,</span> <span class="n">TransformPipeline</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">LeadTime</span><span class="p">,</span> <span class="n">Quantile</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_models.explainability.mixins</span><span class="w"> </span><span class="kn">import</span> <span class="n">ContributionsMixin</span><span class="p">,</span> <span class="n">ExplainableForecaster</span>
@@ -1201,6 +1202,61 @@ window.runMermaid = runMermaid;</script>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">postprocessing</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">raw_predictions</span><span class="p">)</span></div>
 
 
+<div class="viewcode-block" id="BaseForecastingModel.predict_batch">
+<a class="viewcode-back" href="../../../api/generated/openstef_models.models.forecasting_model.BaseForecastingModel.html#openstef_meta.models.ensemble_forecasting_model.BaseForecastingModel.predict_batch">[docs]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">predict_batch</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">TimeSeriesDataset</span><span class="p">],</span>
+        <span class="n">forecast_start</span><span class="p">:</span> <span class="n">Sequence</span><span class="p">[</span><span class="n">datetime</span><span class="p">],</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ForecastDataset</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate forecasts for a batch of inputs with one model instance.</span>
+
+<span class="sd">        Each item is preprocessed independently (keeping its own ``forecast_start``);</span>
+<span class="sd">        the preprocessed batch is then forecast together via ``_predict_batch`` and</span>
+<span class="sd">        each raw forecast is postprocessed.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            data: One ``TimeSeriesDataset`` per location/series to forecast.</span>
+<span class="sd">            forecast_start: One forecast start per item, in input order. Pass</span>
+<span class="sd">                ``[origin] * len(data)`` to share a single origin across the batch.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            One ``ForecastDataset`` per input, in input order.</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            NotFittedError: If the model has not been fitted.</span>
+<span class="sd">            ValueError: If ``forecast_start`` length differs from the batch size.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_fitted</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">NotFittedError</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="vm">__name__</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">data</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">forecast_start</span><span class="p">)</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;forecast_start sequence length </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">forecast_start</span><span class="p">)</span><span class="si">}</span><span class="s2"> != batch size </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">data</span><span class="p">)</span><span class="si">}</span><span class="s2">.&quot;</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
+
+        <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">prepare_input</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">item</span><span class="p">,</span> <span class="n">forecast_start</span><span class="o">=</span><span class="n">start</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">start</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">forecast_start</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">]</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_predict_batch</span><span class="p">(</span><span class="n">input_data</span><span class="o">=</span><span class="n">inputs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">postprocessing</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">forecast</span><span class="p">)</span> <span class="k">for</span> <span class="n">forecast</span> <span class="ow">in</span> <span class="n">raw</span><span class="p">]</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_predict_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ForecastInputDataset</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ForecastDataset</span><span class="p">]:</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate raw forecasts for a preprocessed batch.</span>
+
+<span class="sd">        The default fallback loops ``_predict`` item by item. Subclasses backed by a</span>
+<span class="sd">        batch-native forecaster override this to issue a single batched call.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            input_data: One preprocessed ``ForecastInputDataset`` per batch item.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            One raw ``ForecastDataset`` per input, in input order.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_predict</span><span class="p">(</span><span class="n">input_data</span><span class="o">=</span><span class="n">item</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">input_data</span><span class="p">]</span>
+
 <div class="viewcode-block" id="BaseForecastingModel.score">
 <a class="viewcode-back" href="../../../api/generated/openstef_models.models.forecasting_model.BaseForecastingModel.html#openstef_meta.models.ensemble_forecasting_model.BaseForecastingModel.score">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">score</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">TimeSeriesDataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">SubsetMetric</span><span class="p">:</span>
@@ -1447,6 +1503,22 @@ window.runMermaid = runMermaid;</script>
     <span class="k">def</span><span class="w"> </span><span class="nf">_predict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="n">ForecastInputDataset</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ForecastDataset</span><span class="p">:</span>
         <span class="n">prediction</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forecaster</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">input_data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">restore_target</span><span class="p">(</span><span class="n">dataset</span><span class="o">=</span><span class="n">prediction</span><span class="p">,</span> <span class="n">original_dataset</span><span class="o">=</span><span class="n">input_data</span><span class="p">,</span> <span class="n">target_column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">)</span>
+
+    <span class="nd">@override</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_predict_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_data</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ForecastInputDataset</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">list</span><span class="p">[</span><span class="n">ForecastDataset</span><span class="p">]:</span>
+        <span class="n">raw</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">forecaster</span><span class="o">.</span><span class="n">predict_batch</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">input_data</span><span class="p">)</span>
+        <span class="n">forecasts</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">ForecastDataset</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">item</span><span class="p">,</span> <span class="n">forecast</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">input_data</span><span class="p">,</span> <span class="n">raw</span><span class="p">,</span> <span class="n">strict</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">forecast</span><span class="p">,</span> <span class="n">PredictError</span><span class="p">):</span>
+                <span class="k">raise</span> <span class="n">forecast</span>
+            <span class="n">forecasts</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+                <span class="n">restore_target</span><span class="p">(</span>
+                    <span class="n">dataset</span><span class="o">=</span><span class="n">forecast</span><span class="p">,</span>
+                    <span class="n">original_dataset</span><span class="o">=</span><span class="n">item</span><span class="p">,</span>
+                    <span class="n">target_column</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_column</span><span class="p">,</span>
+                <span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">forecasts</span>
 
 <div class="viewcode-block" id="ForecastingModel.predict_contributions">
 <a class="viewcode-back" href="../../../api/generated/openstef_models.models.forecasting_model.ForecastingModel.html#openstef_meta.models.ensemble_forecasting_model.ForecastingModel.predict_contributions">[docs]</a>

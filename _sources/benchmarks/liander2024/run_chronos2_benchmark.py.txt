@@ -27,24 +27,19 @@
 # 1. Loads a local Chronos-2 ONNX checkpoint once and reuses it for every target
 # 2. Runs day-by-day backtesting on a subset of the dataset (wind parks by default)
 # 3. Produces probabilistic forecasts (7 quantiles) for a 3-day horizon
-# 4. Saves results locally for comparison (see the *Compare Results* notebook)
+# 4. Stacks consecutive forecast windows into batched backend calls (`BATCH_SIZE`)
+# 5. Saves results locally for comparison (see the *Compare Results* notebook)
 #
-# ```{admonition} The model stays loaded across targets
-# :class: tip
+# **Note**:
+#
 # Chronos-2 is zero-shot, so the workflow and its loaded ONNX session are built
 # once and shared across every target. This only holds when the benchmark runs
 # sequentially (`N_PROCESSES = 1`): separate worker processes cannot share a live
 # ONNX session and would load one copy of the model each.
-# ```
-#
-# ```{note}
-# This benchmark runs the full Liander backtest, so it is not run during the docs build.
-# It defaults to the published Chronos-2 checkpoint from the Hub; set `CHRONOS2_ONNX_PATH`
-# to benchmark a local ONNX export instead.
-# ```
+
 
 # %% tags=["remove-cell"]
-# SPDX-FileCopyrightText: 2025 Contributors to the OpenSTEF project <openstef@lfenergy.org>
+# SPDX-FileCopyrightText: 2026 Contributors to the OpenSTEF project <openstef@lfenergy.org>
 #
 # SPDX-License-Identifier: MPL-2.0
 
@@ -57,7 +52,7 @@ os.environ["MKL_NUM_THREADS"] = "1"
 # %% [markdown]
 # ## Setup
 #
-# Import the benchmarking harness, the foundation-model adapter, and configure logging.
+# Import the relevant components, and configure logging.
 
 # %%
 import logging
@@ -94,6 +89,15 @@ logging.basicConfig(level=logging.INFO, format="[%(asctime)s][%(levelname)s] %(m
 
 # %%
 OUTPUT_PATH = Path("./benchmark_results")
+
+# Number of forecast windows Chronos-2 stacks into a single backend call. The
+# backtest pipeline groups consecutive windows per target into batches of this
+# size; 1 forecasts one window at a time. Larger batches mean fewer, heavier
+# ONNX calls. Results are written per batch size so runs do not overwrite.
+# Note that more batching is not always better, it depends on your system.
+# For CPU inference you should usually set this to 1.
+BATCH_SIZE = 16
+
 BENCHMARK_RESULTS_PATH_CHRONOS2 = OUTPUT_PATH / "Chronos2"
 
 # Use the published Chronos-2 checkpoint from the HuggingFace Hub by default. Set
@@ -165,13 +169,14 @@ workflow = create_forecasting_workflow(
 #
 # The benchmark calls this factory once per target. It wraps the shared workflow in
 # a backtest adapter without rebuilding it, so the loaded ONNX session is reused for
-# every location.
+# every location. Passing `batch_size` lets the pipeline forecast several windows in
+# a single backend call instead of one at a time.
 
 
 # %%
 def chronos2_factory(_context: BenchmarkContext, _target: BenchmarkTarget) -> FoundationModelBacktestForecaster:
     """Return a backtest forecaster wrapping the shared, pre-built workflow."""
-    return FoundationModelBacktestForecaster.from_workflow(workflow)
+    return FoundationModelBacktestForecaster.from_workflow(workflow, batch_size=BATCH_SIZE)
 
 
 # %% [markdown]

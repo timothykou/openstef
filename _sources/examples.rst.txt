@@ -48,7 +48,7 @@ Training & Forecasting
    * - :doc:`Hyperparameter Tuning <tutorials/hyperparameter_tuning_with_optuna>`
      - Optimize model hyperparameters using Optuna integration with cross-validated backtesting.
    * - :doc:`Foundation-Model Forecasting <tutorials/foundation_model_forecasting>`
-     - Produce a zero-shot probabilistic forecast with the pretrained Chronos-2 model via OpenSTEF's ONNX backend.
+     - Produce a zero-shot probabilistic forecast with the pretrained Chronos-2 model via OpenSTEF's ONNX backend, including batched multi-origin inference.
 
 Evaluation & Analysis
 ^^^^^^^^^^^^^^^^^^^^^

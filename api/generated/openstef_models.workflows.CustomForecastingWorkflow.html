@@ -1336,6 +1336,35 @@ model prediction, and post-prediction callbacks.</p>
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="openstef_models.workflows.CustomForecastingWorkflow.predict_batch">
+<span class="sig-name descname"><span class="pre">predict_batch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="openstef_core.datasets.TimeSeriesDataset.html#openstef_core.datasets.TimeSeriesDataset" title="openstef_core.datasets.timeseries_dataset.TimeSeriesDataset"><span class="pre">TimeSeriesDataset</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">forecast_start</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><span class="pre">Sequence</span></a><span class="p"><span class="pre">[</span></span><a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><span class="pre">datetime</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><span class="pre">list</span></a><span class="p"><span class="pre">[</span></span><a class="reference internal" href="openstef_core.datasets.ForecastDataset.html#openstef_core.datasets.ForecastDataset" title="openstef_core.datasets.validated_datasets.ForecastDataset"><span class="pre">ForecastDataset</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="reference internal" href="../../_modules/openstef_models/workflows/custom_forecasting_workflow.html#CustomForecastingWorkflow.predict_batch"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#openstef_models.workflows.CustomForecastingWorkflow.predict_batch" title="Link to this definition">#</a></dt>
+<dd><p>Generate forecasts for a batch of inputs with callback execution.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference internal" href="openstef_core.datasets.TimeSeriesDataset.html#openstef_core.datasets.TimeSeriesDataset" title="openstef_core.datasets.timeseries_dataset.TimeSeriesDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">TimeSeriesDataset</span></code></a>]</span>) – One dataset per location/series to forecast.</p></li>
+<li><p><strong>forecast_start</strong> (<span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/collections.abc.html#collections.abc.Sequence" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></a>[<a class="reference external" href="https://docs.python.org/3/library/datetime.html#datetime.datetime" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">datetime</span></code></a>]</span>) – One forecast start per item, in input order. Pass
+<code class="docutils literal notranslate"><span class="pre">[origin]</span> <span class="pre">*</span> <span class="pre">len(data)</span></code> to share a single origin across the batch.</p></li>
+<li><p><strong>data</strong></p></li>
+<li><p><strong>forecast_start</strong></p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One forecast per input, in input order.</p>
+</dd>
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="openstef_core.exceptions.NotFittedError.html#openstef_core.exceptions.NotFittedError" title="openstef_core.exceptions.NotFittedError"><strong>NotFittedError</strong></a> – If the underlying model has not been trained.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.14)"><strong>ValueError</strong></a> – If <code class="docutils literal notranslate"><span class="pre">forecast_start</span></code> length differs from the batch size.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><span class="sphinx_autodoc_typehints-type"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.14)"><code class="xref py py-class docutils literal notranslate"><span class="pre">list</span></code></a>[<a class="reference internal" href="openstef_core.datasets.ForecastDataset.html#openstef_core.datasets.ForecastDataset" title="openstef_core.datasets.validated_datasets.ForecastDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">ForecastDataset</span></code></a>]</span></p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py attribute">
 <dt class="sig sig-object py" id="openstef_models.workflows.CustomForecastingWorkflow.model_config">
 <span class="sig-name descname"><span class="pre">model_config</span></span><span class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference external" href="https://docs.python.org/3/library/typing.html#typing.ClassVar" title="(in Python v3.14)"><span class="pre">ClassVar</span></a><span class="p"><span class="pre">[</span></span><span class="pre">ConfigDict</span><span class="p"><span class="pre">]</span></span></span><span class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">{'arbitrary_types_allowed':</span> <span class="pre">True,</span> <span class="pre">'protected_namespaces':</span> <span class="pre">(),</span> <span class="pre">'ser_json_inf_nan':</span> <span class="pre">'null'}</span></span><a class="headerlink" href="#openstef_models.workflows.CustomForecastingWorkflow.model_config" title="Link to this definition">#</a></dt>
@@ -1422,6 +1451,7 @@ model prediction, and post-prediction callbacks.</p>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openstef_models.workflows.CustomForecastingWorkflow.with_run_name"><code class="docutils literal notranslate"><span class="pre">CustomForecastingWorkflow.with_run_name()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openstef_models.workflows.CustomForecastingWorkflow.fit"><code class="docutils literal notranslate"><span class="pre">CustomForecastingWorkflow.fit()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openstef_models.workflows.CustomForecastingWorkflow.predict"><code class="docutils literal notranslate"><span class="pre">CustomForecastingWorkflow.predict()</span></code></a></li>
+<li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openstef_models.workflows.CustomForecastingWorkflow.predict_batch"><code class="docutils literal notranslate"><span class="pre">CustomForecastingWorkflow.predict_batch()</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openstef_models.workflows.CustomForecastingWorkflow.model_config"><code class="docutils literal notranslate"><span class="pre">CustomForecastingWorkflow.model_config</span></code></a></li>
 <li class="toc-h3 nav-item toc-entry"><a class="reference internal nav-link" href="#openstef_models.workflows.CustomForecastingWorkflow.model_post_init"><code class="docutils literal notranslate"><span class="pre">CustomForecastingWorkflow.model_post_init()</span></code></a></li>
 </ul>

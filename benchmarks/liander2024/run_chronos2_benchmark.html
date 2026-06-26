@@ -446,24 +446,17 @@ numbers are directly comparable.</p>
 <li><p>Loads a local Chronos-2 ONNX checkpoint once and reuses it for every target</p></li>
 <li><p>Runs day-by-day backtesting on a subset of the dataset (wind parks by default)</p></li>
 <li><p>Produces probabilistic forecasts (7 quantiles) for a 3-day horizon</p></li>
+<li><p>Stacks consecutive forecast windows into batched backend calls (<code class="docutils literal notranslate"><span class="pre">BATCH_SIZE</span></code>)</p></li>
 <li><p>Saves results locally for comparison (see the <em>Compare Results</em> notebook)</p></li>
 </ol>
-<div class="tip admonition">
-<p class="admonition-title">The model stays loaded across targets</p>
+<p><strong>Note</strong>:</p>
 <p>Chronos-2 is zero-shot, so the workflow and its loaded ONNX session are built
 once and shared across every target. This only holds when the benchmark runs
 sequentially (<code class="docutils literal notranslate"><span class="pre">N_PROCESSES</span> <span class="pre">=</span> <span class="pre">1</span></code>): separate worker processes cannot share a live
 ONNX session and would load one copy of the model each.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This benchmark runs the full Liander backtest, so it is not run during the docs build.
-It defaults to the published Chronos-2 checkpoint from the Hub; set <code class="docutils literal notranslate"><span class="pre">CHRONOS2_ONNX_PATH</span></code>
-to benchmark a local ONNX export instead.</p>
-</div>
 <section id="setup">
 <h2>Setup<a class="headerlink" href="#setup" title="Link to this heading">#</a></h2>
-<p>Import the benchmarking harness, the foundation-model adapter, and configure logging.</p>
+<p>Import the relevant components, and configure logging.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">logging</span>
@@ -503,6 +496,15 @@ Wind parks are the default subset; add more categories to widen the run.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">OUTPUT_PATH</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s2">&quot;./benchmark_results&quot;</span><span class="p">)</span>
+
+<span class="c1"># Number of forecast windows Chronos-2 stacks into a single backend call. The</span>
+<span class="c1"># backtest pipeline groups consecutive windows per target into batches of this</span>
+<span class="c1"># size; 1 forecasts one window at a time. Larger batches mean fewer, heavier</span>
+<span class="c1"># ONNX calls. Results are written per batch size so runs do not overwrite.</span>
+<span class="c1"># Note that more batching is not always better, it depends on your system.</span>
+<span class="c1"># For CPU inference you should usually set this to 1.</span>
+<span class="n">BATCH_SIZE</span> <span class="o">=</span> <span class="mi">16</span>
+
 <span class="n">BENCHMARK_RESULTS_PATH_CHRONOS2</span> <span class="o">=</span> <span class="n">OUTPUT_PATH</span> <span class="o">/</span> <span class="s2">&quot;Chronos2&quot;</span>
 
 <span class="c1"># Use the published Chronos-2 checkpoint from the HuggingFace Hub by default. Set</span>
@@ -582,12 +584,13 @@ is shared across every target below.</p>
 <h2>Forecaster factory<a class="headerlink" href="#forecaster-factory" title="Link to this heading">#</a></h2>
 <p>The benchmark calls this factory once per target. It wraps the shared workflow in
 a backtest adapter without rebuilding it, so the loaded ONNX session is reused for
-every location.</p>
+every location. Passing <code class="docutils literal notranslate"><span class="pre">batch_size</span></code> lets the pipeline forecast several windows in
+a single backend call instead of one at a time.</p>
 <div class="cell docutils container">
 <div class="cell_input docutils container">
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">chronos2_factory</span><span class="p">(</span><span class="n">_context</span><span class="p">:</span> <span class="n">BenchmarkContext</span><span class="p">,</span> <span class="n">_target</span><span class="p">:</span> <span class="n">BenchmarkTarget</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">FoundationModelBacktestForecaster</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Return a backtest forecaster wrapping the shared, pre-built workflow.&quot;&quot;&quot;</span>
-    <span class="k">return</span> <span class="n">FoundationModelBacktestForecaster</span><span class="o">.</span><span class="n">from_workflow</span><span class="p">(</span><span class="n">workflow</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">FoundationModelBacktestForecaster</span><span class="o">.</span><span class="n">from_workflow</span><span class="p">(</span><span class="n">workflow</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">BATCH_SIZE</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
