@@ -62,6 +62,18 @@ Step-by-step instructions for common OpenSTEF tasks.
 
         Deploy OpenSTEF models in production environments.
 
+    .. grid-item-card:: :fa:`wand-sparkles` Foundation Model Forecasting
+        :link: foundation_model_forecasting_tutorial
+        :link-type: doc
+
+        Produce a zero-shot foundation-model forecast end-to-end.
+
+    .. grid-item-card:: :fa:`screwdriver-wrench` Foundation Model Recipes
+        :link: foundation_model_recipes_tutorial
+        :link-type: doc
+
+        Pick a checkpoint, force a provider, batch, and backtest a foundation model.
+
     .. grid-item-card:: :fa:`file-lines` Logging
         :link: /user_guide/logging
         :link-type: doc
@@ -80,4 +92,6 @@ Step-by-step instructions for common OpenSTEF tasks.
     Backtesting <backtesting_tutorial>
     Benchmark Results <benchmark_results>
     deployment
+    Foundation Model Forecasting <foundation_model_forecasting_tutorial>
+    Foundation Model Recipes <foundation_model_recipes_tutorial>
     /user_guide/logging

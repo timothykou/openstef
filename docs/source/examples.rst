@@ -49,6 +49,8 @@ Training & Forecasting
      - Optimize model hyperparameters using Optuna integration with cross-validated backtesting.
    * - :doc:`Foundation-Model Forecasting <tutorials/foundation_model_forecasting>`
      - Produce a zero-shot probabilistic forecast with the pretrained Chronos-2 model via OpenSTEF's ONNX backend, including batched multi-origin inference.
+   * - :doc:`Foundation Model Recipes <tutorials/foundation_model_recipes>`
+     - Task-focused snippets: pick a checkpoint, run one from disk, pin an execution provider, batch many windows, and wire a foundation model into a backtest.
 
 Evaluation & Analysis
 ^^^^^^^^^^^^^^^^^^^^^
@@ -104,6 +106,7 @@ the docs build — run them locally to reproduce results.
    Ensemble Forecasting <tutorials/ensemble_forecasting>
    Hyperparameter Tuning <tutorials/hyperparameter_tuning_with_optuna>
    Foundation-Model Forecasting <tutorials/foundation_model_forecasting>
+   Foundation Model Recipes <tutorials/foundation_model_recipes>
 
 .. toctree::
    :maxdepth: 1
