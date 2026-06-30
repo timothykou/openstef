@@ -892,6 +892,11 @@ window.runMermaid = runMermaid;</script>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy.typing</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">npt</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.metrics</span><span class="w"> </span><span class="kn">import</span> <span class="n">r2_score</span>
 
+<span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantile</span>
+
+<span class="n">_Q_05</span> <span class="o">=</span> <span class="n">Quantile</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">_Q_95</span> <span class="o">=</span> <span class="n">Quantile</span><span class="p">(</span><span class="mf">0.95</span><span class="p">)</span>
+
 
 <div class="viewcode-block" id="completeness">
 <a class="viewcode-back" href="../../../api/generated/openstef_beam.metrics.metrics_deterministic.completeness.html#openstef_beam.metrics.completeness">[docs]</a>
@@ -983,8 +988,8 @@ window.runMermaid = runMermaid;</script>
     <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">lower_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
-    <span class="n">upper_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="n">lower_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">_Q_05</span><span class="p">,</span>
+    <span class="n">upper_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">_Q_95</span><span class="p">,</span>
     <span class="n">norm_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">allow_nan</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
     <span class="n">sample_weights</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1347,8 +1352,8 @@ window.runMermaid = runMermaid;</script>
     <span class="n">y_pred_lower_q</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="n">y_pred_upper_q</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">measurement_range_lower_q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
-    <span class="n">measurement_range_upper_q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="n">measurement_range_lower_q</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">_Q_05</span><span class="p">,</span>
+    <span class="n">measurement_range_upper_q</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">_Q_95</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the relative Inter Quantile Distance (rIQD).</span>
 
@@ -1463,7 +1468,7 @@ window.runMermaid = runMermaid;</script>
     <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+    <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="n">sample_weights</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the Pinball Loss (also known as Quantile Loss) for a single quantile.</span>
@@ -1513,9 +1518,9 @@ window.runMermaid = runMermaid;</script>
     <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="o">*</span><span class="p">,</span>
-    <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-    <span class="n">measurement_range_lower_q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
-    <span class="n">measurement_range_upper_q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
+    <span class="n">measurement_range_lower_q</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">_Q_05</span><span class="p">,</span>
+    <span class="n">measurement_range_upper_q</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">_Q_95</span><span class="p">,</span>
     <span class="n">sample_weights</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the relative Pinball Loss (also known as relative Quantile Loss).</span>

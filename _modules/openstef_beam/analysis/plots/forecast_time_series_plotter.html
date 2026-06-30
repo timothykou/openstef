@@ -913,14 +913,14 @@ window.runMermaid = runMermaid;</script>
 <span class="k">class</span><span class="w"> </span><span class="nc">BandData</span><span class="p">(</span><span class="n">TypedDict</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;TypedDict for storing quantile band data.</span>
 
-<span class="sd">    ``lower_quantile`` and ``upper_quantile`` are percentile values (0-100) and</span>
+<span class="sd">    ``lower_percentile`` and ``upper_percentile`` are percentile values (0-100) and</span>
 <span class="sd">    may be non-integer (e.g. ``2.5`` or ``99.9``) for extreme quantiles.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span>
     <span class="n">model_index</span><span class="p">:</span> <span class="nb">int</span>
-    <span class="n">lower_quantile</span><span class="p">:</span> <span class="nb">float</span>
-    <span class="n">upper_quantile</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">lower_percentile</span><span class="p">:</span> <span class="nb">float</span>
+    <span class="n">upper_percentile</span><span class="p">:</span> <span class="nb">float</span>
     <span class="n">lower_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span>
     <span class="n">upper_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span>
 
@@ -974,7 +974,7 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        &#39;Figure&#39;</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="n">MEDIAN_QUANTILE</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">50.0</span>
+    <span class="n">MEDIAN_PERCENTILE</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="mf">50.0</span>
 
     <span class="n">COLOR_SCHEME</span><span class="p">:</span> <span class="n">ClassVar</span><span class="p">[</span><span class="nb">dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]]</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s2">&quot;blue&quot;</span><span class="p">:</span> <span class="s2">&quot;Blues&quot;</span><span class="p">,</span>
@@ -1168,24 +1168,24 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        Returns:</span>
 <span class="sd">            str: The label combining the model name and the band&#39;s percentiles.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">lower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_percentile</span><span class="p">(</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;lower_quantile&quot;</span><span class="p">])</span>
-        <span class="n">upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_percentile</span><span class="p">(</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;upper_quantile&quot;</span><span class="p">])</span>
+        <span class="n">lower</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_percentile</span><span class="p">(</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;lower_percentile&quot;</span><span class="p">])</span>
+        <span class="n">upper</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_percentile</span><span class="p">(</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;upper_percentile&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">band</span><span class="p">[</span><span class="s1">&#39;model_name&#39;</span><span class="p">]</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">lower</span><span class="si">}</span><span class="s2">%-</span><span class="si">{</span><span class="n">upper</span><span class="si">}</span><span class="s2">%&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_quantile_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">colormap</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_get_quantile_colors</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">percentile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">colormap</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">str</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate fill and stroke colors for a given quantile using a colorscale.</span>
 
 <span class="sd">        Colors are determined based on the distance from the median (50th percentile).</span>
 
 <span class="sd">        Args:</span>
-<span class="sd">            quantile (float): The quantile value (0-100) to generate colors for.</span>
+<span class="sd">            percentile (float): The percentile value (0-100) to generate colors for.</span>
 <span class="sd">            colormap (str): The colorscale to use.</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            Tuple[str, str]: A tuple containing (fill_color, stroke_color).</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">fill_value</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">quantile</span> <span class="o">-</span> <span class="mf">50.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">50.0</span>
-        <span class="n">stroke_value</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">quantile</span> <span class="o">+</span> <span class="mf">5.0</span> <span class="o">-</span> <span class="mf">50.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">50.0</span>
+        <span class="n">fill_value</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">percentile</span> <span class="o">-</span> <span class="mf">50.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">50.0</span>
+        <span class="n">stroke_value</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">percentile</span> <span class="o">+</span> <span class="mf">5.0</span> <span class="o">-</span> <span class="mf">50.0</span><span class="p">)</span> <span class="o">/</span> <span class="mf">50.0</span>
         <span class="k">return</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_color_by_value</span><span class="p">(</span><span class="n">fill_value</span><span class="p">,</span> <span class="n">colormap</span><span class="p">),</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_get_color_by_value</span><span class="p">(</span><span class="n">stroke_value</span><span class="p">,</span> <span class="n">colormap</span><span class="p">),</span>
@@ -1195,9 +1195,9 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">figure</span><span class="p">:</span> <span class="n">go</span><span class="o">.</span><span class="n">Figure</span><span class="p">,</span>
         <span class="n">lower_quantile_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-        <span class="n">lower_quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">lower_percentile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">upper_quantile_data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
-        <span class="n">upper_quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">upper_percentile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">model_index</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
     <span class="p">):</span>
@@ -1209,17 +1209,17 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        Args:</span>
 <span class="sd">            figure (go.Figure): The plotly figure to add the quantile band to.</span>
 <span class="sd">            lower_quantile_data (pd.Series): Series with data for the lower quantile.</span>
-<span class="sd">            lower_quantile (float): The percentile value of the lower quantile.</span>
+<span class="sd">            lower_percentile (float): The percentile value of the lower quantile.</span>
 <span class="sd">            upper_quantile_data (pd.Series): Series with data for the upper quantile.</span>
-<span class="sd">            upper_quantile (float): The percentile value of the upper quantile.</span>
+<span class="sd">            upper_percentile (float): The percentile value of the upper quantile.</span>
 <span class="sd">            model_name (str): The name of the model for which the quantile band is being added.</span>
 <span class="sd">            model_index (int): The index of the model in the models_data list.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Get colors and legendgroup</span>
         <span class="n">colormap</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">colormaps</span><span class="p">[</span><span class="n">model_index</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">colormaps</span><span class="p">)]</span>
-        <span class="n">fill_color</span><span class="p">,</span> <span class="n">stroke_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_quantile_colors</span><span class="p">(</span><span class="n">lower_quantile</span><span class="p">,</span> <span class="n">colormap</span><span class="p">)</span>
-        <span class="n">lower_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_percentile</span><span class="p">(</span><span class="n">lower_quantile</span><span class="p">)</span>
-        <span class="n">upper_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_percentile</span><span class="p">(</span><span class="n">upper_quantile</span><span class="p">)</span>
+        <span class="n">fill_color</span><span class="p">,</span> <span class="n">stroke_color</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_quantile_colors</span><span class="p">(</span><span class="n">lower_percentile</span><span class="p">,</span> <span class="n">colormap</span><span class="p">)</span>
+        <span class="n">lower_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_percentile</span><span class="p">(</span><span class="n">lower_percentile</span><span class="p">)</span>
+        <span class="n">upper_label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_format_percentile</span><span class="p">(</span><span class="n">upper_percentile</span><span class="p">)</span>
         <span class="n">legendgroup</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">model_name</span><span class="si">}</span><span class="s2">_quantile_</span><span class="si">{</span><span class="n">lower_label</span><span class="si">}</span><span class="s2">_</span><span class="si">{</span><span class="n">upper_label</span><span class="si">}</span><span class="s2">&quot;</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">connect_gaps</span><span class="p">:</span>
@@ -1227,8 +1227,8 @@ window.runMermaid = runMermaid;</script>
             <span class="n">band</span> <span class="o">=</span> <span class="n">BandData</span><span class="p">(</span>
                 <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
                 <span class="n">model_index</span><span class="o">=</span><span class="n">model_index</span><span class="p">,</span>
-                <span class="n">lower_quantile</span><span class="o">=</span><span class="n">lower_quantile</span><span class="p">,</span>
-                <span class="n">upper_quantile</span><span class="o">=</span><span class="n">upper_quantile</span><span class="p">,</span>
+                <span class="n">lower_percentile</span><span class="o">=</span><span class="n">lower_percentile</span><span class="p">,</span>
+                <span class="n">upper_percentile</span><span class="o">=</span><span class="n">upper_percentile</span><span class="p">,</span>
                 <span class="n">lower_data</span><span class="o">=</span><span class="n">lower_quantile_data</span><span class="p">,</span>
                 <span class="n">upper_data</span><span class="o">=</span><span class="n">upper_quantile_data</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1257,8 +1257,8 @@ window.runMermaid = runMermaid;</script>
             <span class="n">band</span> <span class="o">=</span> <span class="n">BandData</span><span class="p">(</span>
                 <span class="n">model_name</span><span class="o">=</span><span class="n">model_name</span><span class="p">,</span>
                 <span class="n">model_index</span><span class="o">=</span><span class="n">model_index</span><span class="p">,</span>
-                <span class="n">lower_quantile</span><span class="o">=</span><span class="n">lower_quantile</span><span class="p">,</span>
-                <span class="n">upper_quantile</span><span class="o">=</span><span class="n">upper_quantile</span><span class="p">,</span>
+                <span class="n">lower_percentile</span><span class="o">=</span><span class="n">lower_percentile</span><span class="p">,</span>
+                <span class="n">upper_percentile</span><span class="o">=</span><span class="n">upper_percentile</span><span class="p">,</span>
                 <span class="n">lower_data</span><span class="o">=</span><span class="n">processed_lower_data</span><span class="p">,</span>
                 <span class="n">upper_data</span><span class="o">=</span><span class="n">processed_upper_data</span><span class="p">,</span>
             <span class="p">)</span>
@@ -1313,7 +1313,7 @@ window.runMermaid = runMermaid;</script>
             <span class="c1"># correctly. Quantile is a float subclass, so it sorts by value.</span>
             <span class="n">quantile_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">col</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;quantile_P&quot;</span><span class="p">)]</span>
             <span class="n">sorted_quantiles</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">Quantile</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">quantile_cols</span><span class="p">)</span>
-            <span class="n">median_column</span> <span class="o">=</span> <span class="n">Quantile</span><span class="o">.</span><span class="n">from_percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MEDIAN_QUANTILE</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">()</span>
+            <span class="n">median_column</span> <span class="o">=</span> <span class="n">Quantile</span><span class="o">.</span><span class="n">from_percentile</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MEDIAN_PERCENTILE</span><span class="p">)</span><span class="o">.</span><span class="n">format</span><span class="p">()</span>
 
             <span class="c1"># Create band data from widest to narrowest</span>
             <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sorted_quantiles</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">):</span>
@@ -1326,8 +1326,8 @@ window.runMermaid = runMermaid;</script>
                     <span class="p">{</span>
                         <span class="s2">&quot;model_name&quot;</span><span class="p">:</span> <span class="n">model_name</span><span class="p">,</span>
                         <span class="s2">&quot;model_index&quot;</span><span class="p">:</span> <span class="n">model_index</span><span class="p">,</span>
-                        <span class="s2">&quot;lower_quantile&quot;</span><span class="p">:</span> <span class="n">lower_q</span><span class="o">.</span><span class="n">to_percentile</span><span class="p">(),</span>
-                        <span class="s2">&quot;upper_quantile&quot;</span><span class="p">:</span> <span class="n">upper_q</span><span class="o">.</span><span class="n">to_percentile</span><span class="p">(),</span>
+                        <span class="s2">&quot;lower_percentile&quot;</span><span class="p">:</span> <span class="n">lower_q</span><span class="o">.</span><span class="n">to_percentile</span><span class="p">(),</span>
+                        <span class="s2">&quot;upper_percentile&quot;</span><span class="p">:</span> <span class="n">upper_q</span><span class="o">.</span><span class="n">to_percentile</span><span class="p">(),</span>
                         <span class="s2">&quot;lower_data&quot;</span><span class="p">:</span> <span class="n">quantiles</span><span class="p">[</span><span class="n">lower_q</span><span class="o">.</span><span class="n">format</span><span class="p">()],</span>
                         <span class="s2">&quot;upper_data&quot;</span><span class="p">:</span> <span class="n">quantiles</span><span class="p">[</span><span class="n">upper_q</span><span class="o">.</span><span class="n">format</span><span class="p">()],</span>
                     <span class="p">}</span>
@@ -1369,7 +1369,7 @@ window.runMermaid = runMermaid;</script>
             <span class="n">forecast</span> <span class="o">=</span> <span class="n">model_data</span><span class="p">[</span><span class="s2">&quot;forecast&quot;</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="n">quantiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">forecast</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">median_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;quantile_P</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MEDIAN_QUANTILE</span><span class="p">)</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="n">median_col</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;quantile_P</span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">MEDIAN_PERCENTILE</span><span class="p">)</span><span class="si">:</span><span class="s2">02d</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="k">if</span> <span class="n">median_col</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
                     <span class="n">lines</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
                         <span class="n">LineData</span><span class="p">(</span>
@@ -1387,9 +1387,9 @@ window.runMermaid = runMermaid;</script>
             <span class="bp">self</span><span class="o">.</span><span class="n">_add_quantile_band</span><span class="p">(</span>
                 <span class="n">figure</span><span class="o">=</span><span class="n">figure</span><span class="p">,</span>
                 <span class="n">lower_quantile_data</span><span class="o">=</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;lower_data&quot;</span><span class="p">],</span>
-                <span class="n">lower_quantile</span><span class="o">=</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;lower_quantile&quot;</span><span class="p">],</span>
+                <span class="n">lower_percentile</span><span class="o">=</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;lower_percentile&quot;</span><span class="p">],</span>
                 <span class="n">upper_quantile_data</span><span class="o">=</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;upper_data&quot;</span><span class="p">],</span>
-                <span class="n">upper_quantile</span><span class="o">=</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;upper_quantile&quot;</span><span class="p">],</span>
+                <span class="n">upper_percentile</span><span class="o">=</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;upper_percentile&quot;</span><span class="p">],</span>
                 <span class="n">model_name</span><span class="o">=</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;model_name&quot;</span><span class="p">],</span>
                 <span class="n">model_index</span><span class="o">=</span><span class="n">band</span><span class="p">[</span><span class="s2">&quot;model_index&quot;</span><span class="p">],</span>
             <span class="p">)</span>

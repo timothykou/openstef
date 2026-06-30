@@ -896,6 +896,9 @@ window.runMermaid = runMermaid;</script>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_beam.metrics.metrics_helpers</span><span class="w"> </span><span class="kn">import</span> <span class="n">represented_interval_weights</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">openstef_core.types</span><span class="w"> </span><span class="kn">import</span> <span class="n">Quantile</span>
 
+<span class="n">_Q_05</span> <span class="o">=</span> <span class="n">Quantile</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="n">_Q_95</span> <span class="o">=</span> <span class="n">Quantile</span><span class="p">(</span><span class="mf">0.95</span><span class="p">)</span>
+
 <span class="nb">type</span> <span class="n">QuantileWeightingMethod</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;interval&quot;</span><span class="p">,</span> <span class="s2">&quot;uniform&quot;</span><span class="p">]</span>
 
 
@@ -904,7 +907,7 @@ window.runMermaid = runMermaid;</script>
 <span class="k">def</span><span class="w"> </span><span class="nf">crps</span><span class="p">(</span>
     <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-    <span class="n">quantiles</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
+    <span class="n">quantiles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Quantile</span><span class="p">],</span>
     <span class="n">sample_weights</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="n">QuantileWeightingMethod</span> <span class="o">=</span> <span class="s2">&quot;interval&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -956,13 +959,13 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">per_quantile_loss</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
         <span class="p">[</span>
-            <span class="n">pinball_loss</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">quantile</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">quantile</span><span class="p">),</span> <span class="n">sample_weights</span><span class="o">=</span><span class="n">sample_weights</span><span class="p">)</span>
+            <span class="n">pinball_loss</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">quantile</span><span class="o">=</span><span class="n">quantile</span><span class="p">,</span> <span class="n">sample_weights</span><span class="o">=</span><span class="n">sample_weights</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
         <span class="p">]</span>
     <span class="p">)</span>
 
     <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s2">&quot;interval&quot;</span><span class="p">:</span>
-        <span class="n">quantile_weights</span> <span class="o">=</span> <span class="n">represented_interval_weights</span><span class="p">([</span><span class="n">Quantile</span><span class="p">(</span><span class="n">quantile</span><span class="p">)</span> <span class="k">for</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="n">quantiles</span><span class="p">])</span>
+        <span class="n">quantile_weights</span> <span class="o">=</span> <span class="n">represented_interval_weights</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="n">quantile_weights</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">full</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">quantiles</span><span class="p">),</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">quantiles</span><span class="p">))</span>
 
@@ -975,9 +978,9 @@ window.runMermaid = runMermaid;</script>
 <span class="k">def</span><span class="w"> </span><span class="nf">rcrps</span><span class="p">(</span>
     <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-    <span class="n">quantiles</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-    <span class="n">lower_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">,</span>
-    <span class="n">upper_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span><span class="p">,</span>
+    <span class="n">quantiles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Quantile</span><span class="p">],</span>
+    <span class="n">lower_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">_Q_05</span><span class="p">,</span>
+    <span class="n">upper_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">_Q_95</span><span class="p">,</span>
     <span class="n">sample_weights</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
     <span class="n">method</span><span class="p">:</span> <span class="n">QuantileWeightingMethod</span> <span class="o">=</span> <span class="s2">&quot;interval&quot;</span><span class="p">,</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
@@ -1074,7 +1077,7 @@ window.runMermaid = runMermaid;</script>
 <span class="k">def</span><span class="w"> </span><span class="nf">mean_absolute_calibration_error</span><span class="p">(</span>
     <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
     <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-    <span class="n">quantiles</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
+    <span class="n">quantiles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Quantile</span><span class="p">],</span>
 <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Calculate the Mean Absolute Calibration Error (MACE) for probabilistic forecasts.</span>
 
@@ -1157,7 +1160,7 @@ window.runMermaid = runMermaid;</script>
     <span class="k">return</span> <span class="nb">float</span><span class="p">(</span>
         <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span>
             <span class="p">[</span>
-                <span class="n">pinball_loss</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">quantile</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">quantile</span><span class="p">),</span> <span class="n">sample_weights</span><span class="o">=</span><span class="n">sample_weight</span><span class="p">)</span>
+                <span class="n">pinball_loss</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">quantile</span><span class="o">=</span><span class="n">quantile</span><span class="p">,</span> <span class="n">sample_weights</span><span class="o">=</span><span class="n">sample_weight</span><span class="p">)</span>
                 <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">quantiles</span><span class="p">)</span>
             <span class="p">]</span>
         <span class="p">)</span>

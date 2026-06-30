@@ -967,13 +967,12 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        Returns:</span>
 <span class="sd">            QuantileMetricsDict mapping quantile keys to computed metric values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">quantiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">subset</span><span class="o">.</span><span class="n">quantiles</span><span class="p">)</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span>
             <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">not_none</span><span class="p">(</span><span class="n">subset</span><span class="o">.</span><span class="n">target_series</span><span class="p">)</span>
         <span class="p">)</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>  <span class="c1"># type workaround</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">=</span> <span class="n">subset</span><span class="o">.</span><span class="n">quantiles_data</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_probabilistic</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_probabilistic</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">subset</span><span class="o">.</span><span class="n">quantiles</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="MetricProvider.compute_probabilistic">
@@ -982,7 +981,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantiles</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
+        <span class="n">quantiles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Quantile</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantileMetricsDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute probabilistic metrics computed on multiple quantile data.</span>
 
@@ -992,17 +991,17 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        Args:</span>
 <span class="sd">            y_true: True values, 1D array of shape (num_samples,).</span>
 <span class="sd">            y_pred: Predicted values, 2D array of shape (num_samples, num_quantiles).</span>
-<span class="sd">            quantiles: Quantiles used for prediction, 1D array of shape (num_quantiles,).</span>
+<span class="sd">            quantiles: Quantiles used for prediction, sequence of length (num_quantiles,).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            QuantileMetricsDict mapping quantile-prefixed metric names to computed values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">QuantileMetricsDict</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">quantiles</span><span class="o">.</span><span class="n">tolist</span><span class="p">()):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">quantiles</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">quantile</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">:</span>
                 <span class="k">continue</span>
 
-            <span class="n">metrics</span><span class="p">[</span><span class="n">quantile</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_deterministic</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">quantile</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">quantile</span><span class="p">))</span>
+            <span class="n">metrics</span><span class="p">[</span><span class="n">quantile</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_deterministic</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">[:,</span> <span class="n">i</span><span class="p">],</span> <span class="n">quantile</span><span class="o">=</span><span class="n">quantile</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">metrics</span></div>
 
@@ -1022,7 +1021,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricsDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute metrics for a single quantile prediction.</span>
 
@@ -1055,7 +1054,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricsDict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;completeness&quot;</span><span class="p">:</span> <span class="n">completeness</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)}</span>
 
@@ -1105,7 +1104,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricsDict</span><span class="p">:</span>
         <span class="n">cm</span> <span class="o">=</span> <span class="n">confusion_matrix</span><span class="p">(</span>
             <span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span>
@@ -1143,12 +1142,12 @@ window.runMermaid = runMermaid;</script>
     <span class="k">def</span><span class="w"> </span><span class="nf">metric_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;rCRPS&quot;</span><span class="p">})</span>
 
-    <span class="n">lower_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">lower_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Lower quantile bound for rCRPS normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">upper_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span>
+    <span class="n">upper_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.99</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Upper quantile bound for rCRPS normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -1159,14 +1158,14 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantiles</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
+        <span class="n">quantiles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Quantile</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantileMetricsDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute rCRPS metric for probabilistic forecasts.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            y_true: True values, 1D array of shape (num_samples,).</span>
 <span class="sd">            y_pred: Predicted values, 2D array of shape (num_samples, num_quantiles).</span>
-<span class="sd">            quantiles: Quantiles used for prediction, 1D array of shape (num_quantiles,).</span>
+<span class="sd">            quantiles: Quantiles used for prediction, sequence of length (num_quantiles,).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            QuantileMetricsDict containing global rCRPS metric value.</span>
@@ -1198,12 +1197,12 @@ window.runMermaid = runMermaid;</script>
     <span class="k">def</span><span class="w"> </span><span class="nf">metric_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;rCRPS_sample_weighted&quot;</span><span class="p">})</span>
 
-    <span class="n">lower_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">lower_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Lower quantile bound for rCRPS normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">upper_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span>
+    <span class="n">upper_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.99</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Upper quantile bound for rCRPS normalization and sample weighting.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">a_min</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -1224,14 +1223,14 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantiles</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
+        <span class="n">quantiles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Quantile</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantileMetricsDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute sample weighted rCRPS metric for probabilistic forecasts.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            y_true: True values, 1D array of shape (num_samples,).</span>
 <span class="sd">            y_pred: Predicted values, 2D array of shape (num_samples, num_quantiles).</span>
-<span class="sd">            quantiles: Quantiles used for prediction, 1D array of shape (num_quantiles,).</span>
+<span class="sd">            quantiles: Quantiles used for prediction, sequence of length (num_quantiles,).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            QuantileMetricsDict containing global sample weighted rCRPS metric value.</span>
@@ -1277,7 +1276,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricsDict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;MAE&quot;</span><span class="p">:</span> <span class="n">mae</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> <span class="n">allow_nan</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">allow_nan</span><span class="p">)}</span>
 
@@ -1296,12 +1295,12 @@ window.runMermaid = runMermaid;</script>
     <span class="k">def</span><span class="w"> </span><span class="nf">metric_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;rMAE&quot;</span><span class="p">})</span>
 
-    <span class="n">lower_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">lower_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Lower quantile bound for rMAE normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">upper_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span>
+    <span class="n">upper_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.99</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Upper quantile bound for rMAE normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">norm_value</span><span class="p">:</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -1321,7 +1320,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricsDict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;rMAE&quot;</span><span class="p">:</span> <span class="n">rmae</span><span class="p">(</span>
@@ -1351,12 +1350,12 @@ window.runMermaid = runMermaid;</script>
     <span class="k">def</span><span class="w"> </span><span class="nf">metric_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;rMAE_peak_hours&quot;</span><span class="p">})</span>
 
-    <span class="n">lower_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">lower_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Lower quantile bound for rMAE normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">upper_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span>
+    <span class="n">upper_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.99</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Upper quantile bound for rMAE normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
     <span class="n">start_peak_hours</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
@@ -1383,7 +1382,6 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        Returns:</span>
 <span class="sd">            QuantileMetricsDict mapping peak/off-peak periods to computed metric values.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">quantiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">subset</span><span class="o">.</span><span class="n">quantiles</span><span class="p">)</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">=</span> <span class="n">cast</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">not_none</span><span class="p">(</span><span class="n">subset</span><span class="o">.</span><span class="n">target_series</span><span class="p">))</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">]</span> <span class="o">=</span> <span class="n">subset</span><span class="o">.</span><span class="n">quantiles_data</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
 
@@ -1393,7 +1391,7 @@ window.runMermaid = runMermaid;</script>
         <span class="n">y_true</span> <span class="o">=</span> <span class="n">y_true</span><span class="p">[</span><span class="n">peak_hours_mask</span><span class="p">]</span>
         <span class="n">y_pred</span> <span class="o">=</span> <span class="n">y_pred</span><span class="p">[</span><span class="n">peak_hours_mask</span><span class="p">]</span>
 
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_probabilistic</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">quantiles</span><span class="p">)</span></div>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_probabilistic</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">subset</span><span class="o">.</span><span class="n">quantiles</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="RMAEPeakHoursProvider.compute_deterministic">
@@ -1403,7 +1401,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricsDict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;rMAE_peak_hours&quot;</span><span class="p">:</span> <span class="n">rmae</span><span class="p">(</span>
@@ -1438,7 +1436,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricsDict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;MAPE&quot;</span><span class="p">:</span> <span class="n">mape</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)}</span></div>
 </div>
@@ -1467,7 +1465,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricsDict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;R2&quot;</span><span class="p">:</span> <span class="n">r2</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)}</span></div>
 </div>
@@ -1497,7 +1495,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricsDict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;observed_probability&quot;</span><span class="p">:</span> <span class="n">observed_probability</span><span class="p">(</span><span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">)}</span></div>
 </div>
@@ -1527,14 +1525,14 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantiles</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
+        <span class="n">quantiles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Quantile</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantileMetricsDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute mean absolute calibration error for probabilistic forecasts.</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            y_true: True values, 1D array of shape (num_samples,).</span>
 <span class="sd">            y_pred: Predicted values, 2D array of shape (num_samples, num_quantiles).</span>
-<span class="sd">            quantiles: Quantiles used for prediction, 1D array of shape (num_quantiles,).</span>
+<span class="sd">            quantiles: Quantiles used for prediction, sequence of length (num_quantiles,).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            QuantileMetricsDict containing global mean absolute calibration error metric.</span>
@@ -1567,14 +1565,14 @@ window.runMermaid = runMermaid;</script>
     <span class="k">def</span><span class="w"> </span><span class="nf">metric_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;rIQD&quot;</span><span class="p">})</span>
 
-    <span class="n">median_quantile</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.5</span>
+    <span class="n">median_quantile</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Quantile</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span>
 
-    <span class="n">measurement_range_lower_q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span>
+    <span class="n">measurement_range_lower_q</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.05</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Lower quantile bound for measurement range normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">measurement_range_upper_q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span>
+    <span class="n">measurement_range_upper_q</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.95</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Upper quantile bound for measurement range normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -1585,7 +1583,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantiles</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
+        <span class="n">quantiles</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Quantile</span><span class="p">],</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">QuantileMetricsDict</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute rIQD for each quantile by finding its symmetric counterpart.</span>
 
@@ -1596,14 +1594,14 @@ window.runMermaid = runMermaid;</script>
 <span class="sd">        Args:</span>
 <span class="sd">            y_true: True values, 1D array of shape (num_samples,).</span>
 <span class="sd">            y_pred: Predicted values, 2D array of shape (num_samples, num_quantiles).</span>
-<span class="sd">            quantiles: Quantiles used for prediction, 1D array of shape (num_quantiles,).</span>
+<span class="sd">            quantiles: Quantiles used for prediction, sequence of length (num_quantiles,).</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            QuantileMetricsDict containing rIQD metrics for each processable quantile.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">metrics</span><span class="p">:</span> <span class="n">QuantileMetricsDict</span> <span class="o">=</span> <span class="p">{}</span>
 
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">quantiles</span><span class="o">.</span><span class="n">tolist</span><span class="p">()):</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">quantile</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">quantiles</span><span class="p">):</span>
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">quantile</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">quantiles</span><span class="p">:</span>
                 <span class="k">continue</span>
 
@@ -1656,12 +1654,12 @@ window.runMermaid = runMermaid;</script>
     <span class="k">def</span><span class="w"> </span><span class="nf">metric_names</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">frozenset</span><span class="p">[</span><span class="nb">str</span><span class="p">]:</span>
         <span class="k">return</span> <span class="nb">frozenset</span><span class="p">({</span><span class="s2">&quot;relative_pinball_loss&quot;</span><span class="p">})</span>
 
-    <span class="n">measurement_range_lower_q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.01</span><span class="p">,</span>
+    <span class="n">measurement_range_lower_q</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.01</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Lower quantile bound for measurement range normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
-    <span class="n">measurement_range_upper_q</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
-        <span class="n">default</span><span class="o">=</span><span class="mf">0.99</span><span class="p">,</span>
+    <span class="n">measurement_range_upper_q</span><span class="p">:</span> <span class="n">Quantile</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="n">Quantile</span><span class="p">(</span><span class="mf">0.99</span><span class="p">),</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">&quot;Upper quantile bound for measurement range normalization.&quot;</span><span class="p">,</span>
     <span class="p">)</span>
 
@@ -1672,7 +1670,7 @@ window.runMermaid = runMermaid;</script>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">npt</span><span class="o">.</span><span class="n">NDArray</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">floating</span><span class="p">],</span>
-        <span class="n">quantile</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+        <span class="n">quantile</span><span class="p">:</span> <span class="n">Quantile</span><span class="p">,</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">MetricsDict</span><span class="p">:</span>
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;relative_pinball_loss&quot;</span><span class="p">:</span> <span class="n">relative_pinball_loss</span><span class="p">(</span>

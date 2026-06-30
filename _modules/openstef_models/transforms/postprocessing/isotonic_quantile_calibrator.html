@@ -1036,7 +1036,7 @@ window.runMermaid = runMermaid;</script>
                 <span class="k">continue</span>  <span class="c1"># Skip this quantile</span>
 
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">use_local_quantile_estimation</span><span class="p">:</span>
-                <span class="n">actuals_clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estimate_local_quantiles</span><span class="p">(</span><span class="n">predictions_clean</span><span class="p">,</span> <span class="n">actuals_clean</span><span class="p">,</span> <span class="nb">float</span><span class="p">(</span><span class="n">quantile</span><span class="p">))</span>
+                <span class="n">actuals_clean</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_estimate_local_quantiles</span><span class="p">(</span><span class="n">predictions_clean</span><span class="p">,</span> <span class="n">actuals_clean</span><span class="p">,</span> <span class="n">quantile</span><span class="p">)</span>
 
             <span class="c1"># Fit isotonic regression</span>
             <span class="n">calibrator</span> <span class="o">=</span> <span class="n">IsotonicRegression</span><span class="p">(</span>
@@ -1060,7 +1060,7 @@ window.runMermaid = runMermaid;</script>
 
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_estimate_local_quantiles</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> <span class="n">predictions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">actuals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">quantile_level</span><span class="p">:</span> <span class="nb">float</span>
+        <span class="bp">self</span><span class="p">,</span> <span class="n">predictions</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">actuals</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">quantile_level</span><span class="p">:</span> <span class="n">Quantile</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Estimate local quantiles using adaptive windowing.</span>
 
